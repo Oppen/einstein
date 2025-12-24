@@ -16,7 +16,7 @@ Puzzle::Puzzle(IconSet &is, SolvedPuzzle &s, Possibilities *p):
                         iconSet(is), solved(s)
 {
     possib = p;
- 
+
     reset();
 }
 
@@ -41,7 +41,7 @@ void Puzzle::draw()
         for (int j = 0; j < PUZZLE_SIZE; j++)
             drawCell(i, j, true);
 }
-    
+
 void Puzzle::drawCell(int col, int row, bool addToUpdate)
 {
     int posX = FIELD_OFFSET_X + col * (FIELD_TILE_WIDTH + FIELD_GAP_X);
@@ -50,7 +50,7 @@ void Puzzle::drawCell(int col, int row, bool addToUpdate)
     if (possib->isDefined(col, row)) {
         int element = possib->getDefined(col, row);
         if (element > 0)
-            screen.draw(posX, posY, iconSet.getLargeIcon(row, element, 
+            screen.draw(posX, posY, iconSet.getLargeIcon(row, element,
                         (hCol == col) && (hRow == row)));
     } else {
         screen.draw(posX, posY, iconSet.getEmptyFieldIcon());
@@ -58,7 +58,7 @@ void Puzzle::drawCell(int col, int row, bool addToUpdate)
         int y = posY + (FIELD_TILE_HEIGHT / 6);
         for (int i = 0; i < 6; i++) {
             if (possib->isPossible(col, row, i + 1))
-                screen.draw(x, y, iconSet.getSmallIcon(row, i + 1, 
+                screen.draw(x, y, iconSet.getSmallIcon(row, i + 1,
                             (hCol == col) && (hRow == row) && (i + 1 == subHNo)));
             if (i == 2) {
                 x = posX;
@@ -67,9 +67,6 @@ void Puzzle::drawCell(int col, int row, bool addToUpdate)
                 x += (FIELD_TILE_WIDTH / 3);
         }
     }
-    if (addToUpdate)
-        screen.addRegionToUpdate(posX, posY, FIELD_TILE_WIDTH, 
-                FIELD_TILE_HEIGHT);
 }
 
 
@@ -86,7 +83,7 @@ bool Puzzle::onMouseButtonDown(int button, int x, int y)
 
     if (! getCellNo(x, y, col, row, element))
         return false;
-    
+
     if (! possib->isDefined(col, row)) {
         /*if (button == 3) {
             for (int i = 1; i <= PUZZLE_SIZE; i++)
@@ -118,7 +115,7 @@ bool Puzzle::onMouseButtonDown(int button, int x, int y)
     else
         if (possib->isSolved() && valid)
             onVictory();
-    
+
     return true;
 }
 
@@ -139,8 +136,8 @@ void Puzzle::onVictory()
 bool Puzzle::getCellNo(int x, int y, int &col, int &row, int &subNo)
 {
     col = row = subNo = -1;
-    
-    if (! isInRect(x, y, FIELD_OFFSET_X, FIELD_OFFSET_Y, 
+
+    if (! isInRect(x, y, FIELD_OFFSET_X, FIELD_OFFSET_Y,
                 (FIELD_TILE_WIDTH + FIELD_GAP_X) * PUZZLE_SIZE,
                 (FIELD_TILE_HEIGHT + FIELD_GAP_Y) * PUZZLE_SIZE))
         return false;
@@ -156,7 +153,7 @@ bool Puzzle::getCellNo(int x, int y, int &col, int &row, int &subNo)
         return false;
 
     x = x - col * (FIELD_TILE_WIDTH + FIELD_GAP_X);
-    y = y - row * (FIELD_TILE_HEIGHT + FIELD_GAP_Y) 
+    y = y - row * (FIELD_TILE_HEIGHT + FIELD_GAP_Y)
         - FIELD_TILE_HEIGHT / 6;
     if ((y < 0) || (y >= (FIELD_TILE_HEIGHT / 3) * 2))
         return true;
@@ -167,7 +164,7 @@ bool Puzzle::getCellNo(int x, int y, int &col, int &row, int &subNo)
     }
     int cRow = y / (FIELD_TILE_HEIGHT / 3);
     subNo = cRow * 3 + cCol + 1;
-    
+
     return true;
 }
 
@@ -176,7 +173,7 @@ bool Puzzle::onMouseMove(int x, int y)
     int oldCol = hCol;
     int oldRow = hRow;
     int oldElement = subHNo;
-    
+
     getCellNo(x, y, hCol, hRow, subHNo);
     if ((hCol != oldCol) || (hRow != oldRow) || (subHNo != oldElement)) {
         if ((oldCol != -1) && (oldRow != -1))
@@ -184,7 +181,7 @@ bool Puzzle::onMouseMove(int x, int y)
         if ((hCol != -1) && (hRow != -1))
             drawCell(hCol, hRow);
     }
-    
+
     return false;
 }
 
@@ -193,4 +190,3 @@ void Puzzle::setCommands(Command *win, Command *fail)
     winCommand = win;
     failCommand = fail;
 }
-

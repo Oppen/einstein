@@ -31,7 +31,6 @@ void MenuBackground::draw()
     s = L"http://games.flowix.com";
     width = urlFont.getWidth(s);
     urlFont.draw((screen.getWidth() - width) / 2, 60, 255,255,0, true, s);
-    screen.addRegionToUpdate(0, 0, screen.getWidth(), screen.getHeight());
 }
 
 
@@ -40,7 +39,7 @@ class NewGameCommand: public Command
 {
     private:
         Area *area;
-    
+
     public:
         NewGameCommand(Area *a) { area = a; };
 
@@ -57,7 +56,7 @@ class LoadGameCommand: public Command
 {
     private:
         Area *area;
-    
+
     public:
         LoadGameCommand(Area *a) { area = a; };
 
@@ -78,7 +77,7 @@ class TopScoresCommand: public Command
 {
     private:
         Area *area;
-    
+
     public:
         TopScoresCommand(Area *a) { area = a; };
 
@@ -95,7 +94,7 @@ class RulesCommand: public Command
 {
     private:
         Area *area;
-    
+
     public:
         RulesCommand(Area *a) { area = a; };
 
@@ -111,7 +110,7 @@ class OptionsCommand: public Command
 {
     private:
         Area *area;
-    
+
     public:
         OptionsCommand(Area *a) { area = a; };
 
@@ -127,7 +126,7 @@ class AboutCommand: public Command
 {
     private:
         Area *parentArea;
-    
+
     public:
         AboutCommand(Area *a) { parentArea = a; };
 
@@ -149,7 +148,7 @@ class AboutCommand: public Command
             LABEL(330, 0, urlFont, L"http://games.flowix.com")
 #undef LABEL
             ExitCommand exitCmd(area);
-            area.add(new Button(360, 400, 80, 25, &font, 255,255,0, L"blue.bmp", 
+            area.add(new Button(360, 400, 80, 25, &font, 255,255,0, L"blue.bmp",
                         msg(L"ok"), &exitCmd));
             area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd));
             area.add(new KeyAccel(SDLK_RETURN, &exitCmd));
@@ -161,7 +160,7 @@ class AboutCommand: public Command
 };
 
 
-static Button* menuButton(int y, Font *font, const std::wstring &text, 
+static Button* menuButton(int y, Font *font, const std::wstring &text,
         Command *cmd=NULL)
 {
     return new Button(550, y, 220, 30, font, 0,240,240, 30,255,255, text, cmd);
@@ -175,7 +174,7 @@ void menu()
 
     area.add(new MenuBackground());
     area.draw();
-        
+
     NewGameCommand newGameCmd(&area);
     area.add(menuButton(340, &font, msg(L"newGame"), &newGameCmd));
     LoadGameCommand loadGameCmd(&area);
@@ -191,11 +190,9 @@ void menu()
     ExitCommand exitMenuCmd(area);
     area.add(menuButton(520, &font, msg(L"exit"), &exitMenuCmd));
     area.add(new KeyAccel(SDLK_ESCAPE, &exitMenuCmd));
-    
+
     area.draw();
-    screen.addRegionToUpdate(0, 0, screen.getWidth(), screen.getHeight());
     screen.flush();
 
     area.run();
 }
-

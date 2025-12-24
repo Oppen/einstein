@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "screen.h"
 #include "SDL_render.h"
+#include "SDL_surface.h"
 #include "SDL_video.h"
 #include "exceptions.h"
 #include "unicode.h"
@@ -8,8 +9,8 @@
 
 Screen::Screen()
 {
-    SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_FULLSCREEN_DESKTOP, &window, &renderer);
-    screen = SDL_CreateRGBSurface(0, 640, 480, 32,
+    SDL_CreateWindowAndRenderer(getWidth(), getHeight(), SDL_WINDOW_FULLSCREEN_DESKTOP, &window, &renderer);
+    screen = SDL_CreateRGBSurface(0, getWidth(), getHeight(), 32,
                                             0x00FF0000,
                                             0x0000FF00,
                                             0x000000FF,
@@ -17,12 +18,11 @@ Screen::Screen()
     texture = SDL_CreateTexture(renderer,
                                                 SDL_PIXELFORMAT_ARGB8888,
                                                 SDL_TEXTUREACCESS_STREAMING,
-                                                640, 480);
+                                                getWidth(), getHeight());
     SDL_RenderSetLogicalSize(renderer, getWidth(), getHeight());
     mouseImage = NULL;
     mouseSave = NULL;
     mouseVisible = false;
-    regionsList = NULL;
     maxRegionsList = 0;
 }
 
@@ -31,19 +31,18 @@ Screen::~Screen()
     SDL_SetCursor(cursor);
     if (mouseImage) SDL_FreeSurface(mouseImage);
     if (mouseSave) SDL_FreeSurface(mouseSave);
-    if (regionsList) free(regionsList);
 }
 
 
 int Screen::getWidth() const
 {
-    return 1024;
+    return 800;
 }
 
 
 int Screen::getHeight() const
 {
-    return 768;
+    return 600;
 }
 
 void Screen::setFullScreen(bool enable) {
@@ -52,10 +51,7 @@ void Screen::setFullScreen(bool enable) {
 
 void Screen::centerMouse()
 {
-    if (screen)
-        SDL_WarpMouseGlobal(screen->w / 2, screen->h / 2);
-    else
-        throw Exception(L"No video mode selected");
+    SDL_WarpMouseGlobal(getWidth() / 2, getHeight() / 2);
 }
 
 void Screen::setMouseImage(SDL_Surface *image)
@@ -133,7 +129,6 @@ void Screen::showMouse()
         if (src.w > 0) {
             SDL_BlitSurface(screen, &dst, mouseSave, &src);
             SDL_BlitSurface(mouseImage, &src, screen, &dst);
-            addRegionToUpdate(dst.x, dst.y, dst.w, dst.h);
         }
     }
     mouseVisible = true;
@@ -147,61 +142,15 @@ void Screen::updateMouse()
 
 void Screen::flush()
 {
-    if (! regions.size()) return;
-
-    if (! regionsList) {
-        regionsList = (SDL_Rect*)malloc(sizeof(SDL_Rect) * regions.size());
-        if (! regionsList) {
-            regions.clear();
-            throw Exception(L"Error allocating regions buffer");
-        }
-        maxRegionsList = regions.size();
-    } else {
-        if (maxRegionsList < (int)regions.size()) {
-            SDL_Rect *r = (SDL_Rect*)realloc(regionsList,
-                    sizeof(SDL_Rect) * regions.size());
-            if (! r) {
-                regions.clear();
-                free(regionsList);
-                throw Exception(L"Error incrementing regions buffer");
-            }
-            regionsList = r;
-            maxRegionsList = regions.size();
-        }
-    }
-
-    int j = 0;
-    for (auto r : regions)
-        regionsList[j++] = r;
-
-    SDL_RenderDrawRects(renderer, regionsList, regions.size());
+    Uint32 format;
+    int access, w, h;
+    SDL_RenderClear(renderer);
+    SDL_QueryTexture(texture, &format, &access, &w, &h);
+    SDL_Surface *s = SDL_ConvertSurfaceFormat(screen, format, 0);
+    SDL_UpdateTexture(texture, NULL, s, s->pitch);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
-    regions.clear();
 }
-
-
-void Screen::addRegionToUpdate(int x, int y, int w, int h)
-{
-    if (((x >= getWidth()) || (y >= getHeight())) || (0 >= w) || (0 >= h))
-        return;
-    if ((x + w < 0) || (y + h < 0))
-        return;
-    if (x + w > getWidth())
-        w = getWidth() - x;
-    if (y + h > getHeight())
-        h = getHeight() - y;
-    if (0 > x) {
-        w = w + x;
-        x = 0;
-    }
-    if (0 > y) {
-        h = h + y;
-        y = 0;
-    }
-    SDL_Rect r = { x, y, w, h };
-    regions.push_back(r);
-}
-
 
 void Screen::setPixel(int x, int y, int r, int g, int b)
 {

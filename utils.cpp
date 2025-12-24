@@ -13,6 +13,7 @@
 #include <fstream>
 
 #include "utils.h"
+#include "SDL_surface.h"
 #include "main.h"
 #include "unicode.h"
 #include "sound.h"
@@ -57,14 +58,13 @@ SDL_Surface* loadImage(const std::wstring &name, bool transparent)
     resources->delRef(bmp);
     if (! s)
         throw Exception(L"Error loading " + name);
-    // SDL_Surface *screenS = SDL_DisplayFormat(s);
-    // SDL_FreeSurface(s);
-    // if (! screenS)
-    //     throw Exception(L"Error translating to screen format " + name);
+    SDL_Surface *screenS = SDL_ConvertSurface(s, screen.getSurface()->format, 0);
+    SDL_FreeSurface(s);
+    if (! screenS)
+        throw Exception(L"Error translating to screen format " + name);
     // if (transparent)
     //     SDL_SetColorKey(screenS, SDL_SRCCOLORKEY, getCornerPixel(screenS));
-    // return screenS;
-    return s;
+    return screenS;
 }
 
 
@@ -202,7 +202,7 @@ SDL_Surface* adjustBrightness(SDL_Surface *image, double k, bool transparent)
         lastGamma = k;
     }
 
-    SDL_Surface *s = NULL; //SDL_DisplayFormat(image);
+    SDL_Surface *s = SDL_ConvertSurface(image, screen.getSurface()->format, 0);
     if (! s)
         throw Exception(L"Error converting image to display format");
 
@@ -243,7 +243,6 @@ class CenteredBitmap: public Widget
 
         virtual void draw() {
             screen.draw(x, y, tile);
-            screen.addRegionToUpdate(x, y, tile->w, tile->h);
         };
 };
 

@@ -1,4 +1,5 @@
 #include "widgets.h"
+#include "SDL_surface.h"
 #include "main.h"
 #include "utils.h"
 #include "sound.h"
@@ -150,7 +151,7 @@ Button::Button(int x, int y, int w, int h, Font *font,
 Button::~Button()
 {
     SDL_FreeSurface(image);
-    SDL_FreeSurface(highlighted);
+    // SDL_FreeSurface(highlighted);
 }
 
 
@@ -160,7 +161,6 @@ void Button::draw()
         screen.draw(left, top, highlighted);
     else
         screen.draw(left, top, image);
-    screen.addRegionToUpdate(left, top, width, height);
 }
 
 
@@ -470,7 +470,7 @@ Window::Window(int x, int y, int w, int h, const std::wstring &bg,
     }
     SDL_UnlockSurface(win);
 
-    // background = SDL_DisplayFormat(win);
+    background = SDL_ConvertSurface(win, screen.getSurface()->format, 0);
     SDL_FreeSurface(win);
 }
 
@@ -484,7 +484,6 @@ Window::~Window()
 void Window::draw()
 {
     screen.draw(left, top, background);
-    screen.addRegionToUpdate(left, top, width, height);
 }
 
 
@@ -548,7 +547,6 @@ void Label::draw()
     }
 
     font->draw(x, y, red,green,blue, shadow, text);
-    screen.addRegionToUpdate(x, y, w, h);
 }
 
 
@@ -738,7 +736,9 @@ Checkbox::Checkbox(int x, int y, int w, int h, Font *font,
 
     highlighted = adjustBrightness(image, 1.5, false);
 
-    // checkedImage = SDL_DisplayFormat(image);
+    checkedImage = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
+            s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
+            s->format->Bmask, s->format->Amask);
     int tW, tH;
     font->getSize(L"X", tW, tH);
     tH += 2;
@@ -773,7 +773,6 @@ void Checkbox::draw()
         else
             screen.draw(left, top, image);
     }
-    screen.addRegionToUpdate(left, top, width, height);
 }
 
 
@@ -844,7 +843,6 @@ Picture::~Picture()
 void Picture::draw()
 {
     screen.draw(left, top, image);
-    screen.addRegionToUpdate(left, top, width, height);
 }
 
 void Picture::moveX(const int newX)
@@ -894,7 +892,6 @@ void Slider::draw()
     if (! background)
         createBackground();
     screen.draw(left, top, background);
-    screen.addRegionToUpdate(left, top, width, height);
     int posX = valueToX(value);
     SDL_Surface *s = highlight ? activeSlider : slider;
     screen.draw(left + posX, top, s);

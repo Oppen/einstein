@@ -32,12 +32,10 @@ void GameBackground::draw()
     SDL_Surface *tile = loadImage(L"title.bmp");
     screen.draw(8, 10, tile);
     SDL_FreeSurface(tile);
-    
+
     Font titleFont(L"nova.ttf", 28);
-    titleFont.draw(screen.getSurface(), 20, 20, 255,255,0, true, 
+    titleFont.draw(screen.getSurface(), 20, 20, 255,255,0, true,
             msg(L"einsteinPuzzle"));
-    
-    screen.addRegionToUpdate(0, 0, screen.getWidth(), screen.getHeight());
 }
 
 
@@ -52,7 +50,7 @@ class ToggleHintCommand: public Command
             verHints = v;
             horHints = h;
         };
-        
+
         virtual void doAction() {
             verHints->toggleExcluded();
             horHints->toggleExcluded();
@@ -68,7 +66,7 @@ class Watch: public TimerHandler, public Widget
         bool stoped;
         int lastUpdate;
         Font *font;
-    
+
     public:
         Watch();
         Watch(std::istream &stream);
@@ -109,7 +107,7 @@ void Watch::onTimer()
 {
     if (stoped)
         return;
-    
+
     Uint32 now = SDL_GetTicks();
     elapsed += now - lastRun;
     lastRun = now;
@@ -134,17 +132,16 @@ void Watch::draw()
 {
     int time = elapsed / 1000;
     std::wstring s = secToStr(time);
-    
+
     int x = 700;
     int y = 24;
     int w, h;
     font->getSize(s, w, h);
     SDL_Rect rect = { x-2, y-2, w+4, h+4 };
-    SDL_FillRect(screen.getSurface(), &rect, 
+    SDL_FillRect(screen.getSurface(), &rect,
             SDL_MapRGB(screen.getSurface()->format, 0, 0, 255));
     font->draw(x, y, 255,255,255, true, s);
-    screen.addRegionToUpdate(x-2, y-2, w+4, h+4);
-    
+
     lastUpdate = time;
 }
 
@@ -168,12 +165,12 @@ class PauseGameCommand: public Command
         Widget *background;
 
     public:
-        PauseGameCommand(Area *a, Watch *w, Widget *bg) { 
-            gameArea = a; 
+        PauseGameCommand(Area *a, Watch *w, Widget *bg) {
+            gameArea = a;
             watch = w;
             background = bg;
         };
-        
+
         virtual void doAction() {
             watch->stop();
             Area area;
@@ -200,17 +197,17 @@ class WinCommand: public Command
         Game *game;
 
     public:
-        WinCommand(Area *a, Watch *w, Game *g) { 
-            gameArea = a; 
+        WinCommand(Area *a, Watch *w, Game *g) {
+            gameArea = a;
             watch = w;
             game = g;
         };
-        
+
         virtual void doAction() {
             sound->play(L"applause.wav");
             watch->stop();
             Font font(L"laudcn2.ttf", 20);
-            showMessageWindow(gameArea, L"marble1.bmp", 
+            showMessageWindow(gameArea, L"marble1.bmp",
                     500, 70, &font, 255,0,0, msg(L"won"));
             gameArea->draw();
             TopScores scores;
@@ -234,12 +231,12 @@ class OkDlgCommand: public Command
         Area *area;
 
     public:
-        OkDlgCommand(Area *a, bool &r): res(r) { 
-            area = a; 
+        OkDlgCommand(Area *a, bool &r): res(r) {
+            area = a;
         };
-        
-        virtual void doAction() { 
-            res = true; 
+
+        virtual void doAction() {
+            res = true;
             area->finishEventLoop();
         };
 };
@@ -252,7 +249,7 @@ class FailCommand: public Command
 
     public:
         FailCommand(Area *a, Game *g) { gameArea = a;  game = g; };
-        
+
         virtual void doAction() {
             sound->play(L"glasbk2.wav");
             bool restart = false;
@@ -265,13 +262,13 @@ class FailCommand: public Command
             area.add(new Label(&font, 250, 230, 300, 100, Label::ALIGN_CENTER,
                         Label::ALIGN_MIDDLE, 255,255,0, msg(L"loose")));
             OkDlgCommand newGameCmd(&area, newGame);
-            area.add(new Button(250, 340, 90, 25, &btnFont, 255,255,0, 
+            area.add(new Button(250, 340, 90, 25, &btnFont, 255,255,0,
                         L"redpattern.bmp", msg(L"startNew"), &newGameCmd));
             OkDlgCommand restartCmd(&area, restart);
-            area.add(new Button(350, 340, 90, 25, &btnFont, 255,255,0, 
+            area.add(new Button(350, 340, 90, 25, &btnFont, 255,255,0,
                         L"redpattern.bmp", msg(L"tryAgain"), &restartCmd));
             ExitCommand exitCmd(area);
-            area.add(new Button(450, 340, 90, 25, &btnFont, 255,255,0, 
+            area.add(new Button(450, 340, 90, 25, &btnFont, 255,255,0,
                         L"redpattern.bmp", msg(L"exit"), &exitCmd));
             area.run();
             if (restart || newGame) {
@@ -313,7 +310,7 @@ class CheatAccel: public Widget
                         return false;
                 }
             }
-            if (typed.length() > 0) 
+            if (typed.length() > 0)
                 typed = L"";
             return false;
         }
@@ -327,11 +324,11 @@ class CheatCommand: public Command
 
     public:
         CheatCommand(Area *a) { gameArea = a; };
-        
+
         virtual void doAction() {
             Font font(L"nova.ttf", 30);
-            showMessageWindow(gameArea, L"darkpattern.bmp", 
-                    500, 100, &font, 255,255,255, 
+            showMessageWindow(gameArea, L"darkpattern.bmp",
+                    500, 100, &font, 255,255,255,
                     msg(L"iddqd"));
             gameArea->draw();
         };
@@ -347,20 +344,20 @@ class SaveGameCommand: public Command
         Game *game;
 
     public:
-        SaveGameCommand(Area *a, Watch *w, Widget *bg, Game *g) { 
-            gameArea = a; 
+        SaveGameCommand(Area *a, Watch *w, Widget *bg, Game *g) {
+            gameArea = a;
             watch = w;
             background = bg;
             game = g;
         };
-        
+
         virtual void doAction() {
             watch->stop();
 
             Area area;
             area.add(background, false);
             saveGame(&area, game);
-            
+
             gameArea->updateMouse();
             gameArea->draw();
             watch->start();
@@ -374,10 +371,10 @@ class GameOptionsCommand: public Command
         Area *gameArea;
 
     public:
-        GameOptionsCommand(Area *a) { 
-            gameArea = a; 
+        GameOptionsCommand(Area *a) {
+            gameArea = a;
         };
-        
+
         virtual void doAction() {
             showOptionsWindow(gameArea);
             gameArea->updateMouse();
@@ -394,12 +391,12 @@ class HelpCommand: public Command
         Widget *background;
 
     public:
-        HelpCommand(Area *a, Watch *w, Widget *b) { 
+        HelpCommand(Area *a, Watch *w, Widget *b) {
             gameArea = a;
             watch = w;
             background = b;
         };
-        
+
         virtual void doAction() {
             watch->stop();
             Area area;
@@ -420,7 +417,7 @@ Game::Game()
 
     possibilities = new Possibilities();
     openInitial(*possibilities, rules);
-    
+
     puzzle = new Puzzle(iconSet, solvedPuzzle, possibilities);
     verHints = new VertHints(iconSet, rules);
     horHints = new HorHints(iconSet, rules);
@@ -479,14 +476,13 @@ void Game::pleaseWait()
     Label label(&font, 280, 275, 240, 50, Label::ALIGN_CENTER,
                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"loading"));
     label.draw();
-    screen.addRegionToUpdate(0, 0, screen.getWidth(), screen.getHeight());
     screen.flush();
 }
 
 void Game::genPuzzle()
 {
     pleaseWait();
-    
+
     int horRules, verRules;
     do {
         if (rules.size() > 0)
@@ -497,7 +493,7 @@ void Game::genPuzzle()
 
     memcpy(savedSolvedPuzzle, solvedPuzzle, sizeof(solvedPuzzle));
     savedRules = rules;
-    
+
     hinted = false;
 }
 
@@ -521,7 +517,7 @@ void Game::restart()
 {
     memcpy(solvedPuzzle, savedSolvedPuzzle, sizeof(solvedPuzzle));
     rules = savedRules;
-    
+
     resetVisuals();
     hinted = true;
 }
@@ -534,7 +530,7 @@ void Game::run()
 {
     Area area;
     Font btnFont(L"laudcn2.ttf", 14);
-    
+
     area.setTimer(300, watch);
 
     GameBackground *background = new GameBackground();
@@ -547,7 +543,7 @@ void Game::run()
     area.add(puzzle, false);
     area.add(verHints, false);
     area.add(horHints, false);
-    
+
     PauseGameCommand pauseGameCmd(&area, watch, background);
     BUTTON(12, 400, L"pause", &pauseGameCmd)
     ToggleHintCommand toggleHintsCmd(verHints, horHints);
@@ -566,4 +562,3 @@ void Game::run()
     watch->start();
     area.run();
 }
-

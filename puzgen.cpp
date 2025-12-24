@@ -43,7 +43,7 @@ void Possibilities::checkSingles(int row)
     memset(elsCnt, 0, sizeof(elsCnt));
     memset(elements, 0, sizeof(elements));
     memset(elCells, 0, sizeof(elCells));
-    
+
     // check if there is only one element left in cell(col, row)
     for (int col = 0; col < PUZZLE_SIZE; col++)
         for (int i = 0; i < PUZZLE_SIZE; i++) {
@@ -56,7 +56,7 @@ void Possibilities::checkSingles(int row)
         }
 
     bool changed = false;
-    
+
     // check for cells with single element
     for (int col = 0; col < PUZZLE_SIZE; col++) {
         if ((cellsCnt[col] == 1) && (elsCnt[elements[col] - 1] != 1)) {
@@ -78,7 +78,7 @@ void Possibilities::checkSingles(int row)
                     pos[col][row][i] = 0;
             changed = true;
         }
-    
+
     if (changed)
         checkSingles(row);
 }
@@ -100,11 +100,11 @@ void Possibilities::set(int col, int row, int element)
             pos[col][row][i] = 0;
         else
             pos[col][row][i] = element;
-    
+
     for (int j = 0; j < PUZZLE_SIZE; j++)
         if (j != col)
             pos[j][row][element - 1] = 0;
-    
+
     checkSingles(row);
 }
 
@@ -158,7 +158,7 @@ int Possibilities::getPosition(int row, int element)
 {
     int cnt = 0;
     int lastPos = -1;
-    
+
     for (int i = 0; i < PUZZLE_SIZE; i++)
         if (pos[i][row][element - 1] == element) {
             cnt++;
@@ -202,7 +202,7 @@ static bool canSolve(SolvedPuzzle &puzzle, Rules &rules)
 {
     Possibilities pos;
     bool changed = false;
-    
+
     do {
         changed = false;
         for (auto rule : rules) {
@@ -226,7 +226,7 @@ static bool canSolve(SolvedPuzzle &puzzle, Rules &rules)
 static void removeRules(SolvedPuzzle &puzzle, Rules &rules)
 {
     bool possible;
-    
+
     do {
         possible = false;
         for (auto rule : rules) {
@@ -251,8 +251,8 @@ static void genRules(SolvedPuzzle &puzzle, Rules &rules)
         Rule *rule = genRule(puzzle);
         if (rule) {
             std::wstring s = rule->getAsText();
-            for (auto r : rules) 
-                if (r->getAsText() == s) {
+            for (auto r : rules)
+                if (r && r->getAsText() == s) {
                     delete rule;
                     rule = NULL;
                     break;
@@ -292,7 +292,7 @@ void genPuzzle(SolvedPuzzle &puzzle, Rules &rules)
 {
     std::default_random_engine rng(time(NULL));
     for (int i = 0; i < PUZZLE_SIZE; i++) {
-        for (int j = 0; j < PUZZLE_SIZE; j++) 
+        for (int j = 0; j < PUZZLE_SIZE; j++)
             puzzle[i][j] = j + 1;
         std::shuffle(&puzzle[i], &puzzle[i] + PUZZLE_SIZE, rng);
     }
@@ -357,14 +357,13 @@ Rule* getRule(Rules &rules, int no)
 /*int main(int argc, char *argv[])
 {
     srand(time(NULL));
-    
+
     Rules rules;
     Puzzle puzzle;
-    
+
     genPuzzle(puzzle, rules);
     printPuzzle(puzzle);
     printRules(rules);
-    
+
     return 0;
 }*/
-

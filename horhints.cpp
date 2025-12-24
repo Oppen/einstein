@@ -39,7 +39,7 @@ HorHints::HorHints(IconSet &is, Rules &rl, std::istream &stream): iconSet(is)
     }
 
     showExcluded = readInt(stream);
-    
+
     int x, y;
     SDL_GetMouseState(&x, &y);
     highlighted = getRuleNo(x, y);
@@ -51,7 +51,7 @@ void HorHints::reset(Rules &r)
     rules.clear();
     excludedRules.clear();
     numbersArr.clear();
-    
+
     int no = 0;
     for (auto rule : r) {
         if (rule->getShowOpts() == Rule::SHOW_HORIZ) {
@@ -61,7 +61,7 @@ void HorHints::reset(Rules &r)
         }
         no++;
     }
-    
+
     showExcluded = false;
 
     int x, y;
@@ -93,22 +93,19 @@ void HorHints::drawCell(int col, int row, bool addToUpdate)
     else
         for (int i = 0; i < 3; i++)
             screen.draw(x + TILE_HEIGHT*i, y, iconSet.getEmptyHintIcon());
-    
-    if (addToUpdate)
-        screen.addRegionToUpdate(x, y, TILE_WIDTH*3, TILE_HEIGHT);
 }
 
 
 bool HorHints::onMouseButtonDown(int button, int x, int y)
 {
-    if (button != 3) 
+    if (button != 3)
         return false;
 
     int no = getRuleNo(x, y);
     if (no < 0) return false;
     int row = no / HINTS_COLS;
     int col = no - row * HINTS_COLS;
- 
+
     if (showExcluded) {
         Rule *r = excludedRules[no];
         if (r) {
@@ -176,7 +173,7 @@ int HorHints::getRuleNo(int x, int y)
     int row = y / (TILE_HEIGHT + TILE_GAP_Y);
     if (row * (TILE_HEIGHT + TILE_GAP_Y) + TILE_HEIGHT < y)
         return -1;
- 
+
     int no = row * HINTS_COLS + col;
     if (no >= (int)rules.size())
         return -1;
@@ -203,4 +200,3 @@ void HorHints::save(std::ostream &stream)
     }
     writeInt(stream, showExcluded ? 1 : 0);
 }
-

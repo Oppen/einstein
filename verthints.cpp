@@ -38,7 +38,7 @@ VertHints::VertHints(IconSet &is, Rules &rl, std::istream &stream): iconSet(is)
     }
 
     showExcluded = readInt(stream);
-    
+
     int x, y;
     SDL_GetMouseState(&x, &y);
     highlighted = getRuleNo(x, y);
@@ -49,7 +49,7 @@ void VertHints::reset(Rules &r)
     rules.clear();
     excludedRules.clear();
     numbersArr.clear();
-    
+
     int no = 0;
     for (auto rule : r) {
         if (rule->getShowOpts() == Rule::SHOW_VERT) {
@@ -92,20 +92,17 @@ void VertHints::drawCell(int col, bool addToUpdate)
         screen.draw(x, y, iconSet.getEmptyHintIcon());
         screen.draw(x, y + TILE_HEIGHT, iconSet.getEmptyHintIcon());
     }
-    
-    if (addToUpdate)
-        screen.addRegionToUpdate(x, y, TILE_WIDTH, TILE_HEIGHT*2);
 }
 
 
 bool VertHints::onMouseButtonDown(int button, int x, int y)
 {
-    if (button != 3) 
+    if (button != 3)
         return false;
- 
+
     int no = getRuleNo(x, y);
     if (no < 0) return false;
-    
+
     if (no < (int)rules.size()) {
         if (showExcluded) {
             Rule *r = excludedRules[no];
@@ -144,7 +141,7 @@ bool VertHints::onMouseMove(int x, int y)
     if (no != highlighted) {
         int old = highlighted;
         highlighted = no;
-        if (isActive(old)) 
+        if (isActive(old))
             drawCell(old);
         if (isActive(no))
             drawCell(no);
@@ -189,4 +186,3 @@ void VertHints::save(std::ostream &stream)
     }
     writeInt(stream, showExcluded ? 1 : 0);
 }
-

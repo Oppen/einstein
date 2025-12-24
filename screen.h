@@ -20,9 +20,7 @@ class Screen
         bool fullScreen;
         SDL_Surface *mouseImage;
         SDL_Surface *mouseSave;
-        std::list<SDL_Rect> regions;
         bool mouseVisible;
-        SDL_Rect *regionsList;
         int maxRegionsList;
         int saveX, saveY;
         bool niceCursor;
@@ -42,7 +40,6 @@ class Screen
         void showMouse();
         void updateMouse();
         void flush();
-        void addRegionToUpdate(int x, int y, int w, int h);
         void setPixel(int x, int y, int r, int g, int b);
         SDL_Surface* getSurface() { return screen; };
         void draw(int x, int y, SDL_Surface *surface);
