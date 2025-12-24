@@ -23,7 +23,7 @@ class Widget
 {
     protected:
         Area *area;
-    
+
     public:
         virtual ~Widget() { };
 
@@ -45,18 +45,18 @@ class Button: public Widget
         SDL_Surface *image, *highlighted;
         bool mouseInside;
         Command *command;
-        
+
     public:
-        Button(int x, int y, const std::wstring &name, Command *cmd=NULL, 
+        Button(int x, int y, const std::wstring &name, Command *cmd=NULL,
                 bool transparent=true);
-        Button(int x, int y, int width, int height, Font *font, 
-                int fR, int fG, int fB, int hR, int hG, int hB, 
+        Button(int x, int y, int width, int height, Font *font,
+                int fR, int fG, int fB, int hR, int hG, int hB,
                 const std::wstring &text, Command *cmd=NULL);
-        Button(int x, int y, int width, int height, Font *font, 
-                int r, int g, int b, const std::wstring &background, 
+        Button(int x, int y, int width, int height, Font *font,
+                int r, int g, int b, const std::wstring &background,
                 const std::wstring &text, Command *cmd=NULL);
-        Button(int x, int y, int width, int height, Font *font, 
-                int r, int g, int b, const std::wstring &background, 
+        Button(int x, int y, int width, int height, Font *font,
+                int r, int g, int b, const std::wstring &background,
                 const std::wstring &text, bool bevel, Command *cmd=NULL);
         virtual ~Button();
 
@@ -125,10 +125,10 @@ class ExitCommand: public Command
 {
     private:
         Area &area;
-    
+
     public:
         ExitCommand(Area &a): area(a) { }
-        
+
         virtual void doAction() {
             area.finishEventLoop();
         };
@@ -156,9 +156,9 @@ class Window: public Widget
     protected:
         int left, top, width, height;
         SDL_Surface *background;
-    
+
     public:
-        Window(int x, int y, int w, int h, const std::wstring &background, 
+        Window(int x, int y, int w, int h, const std::wstring &background,
                 bool frameWidth=4, bool raised=true);
         virtual ~Window();
 
@@ -175,13 +175,13 @@ class Label: public Widget
             ALIGN_CENTER,
             ALIGN_RIGHT
         } HorAlign;
-        
+
         typedef enum {
             ALIGN_TOP,
             ALIGN_MIDDLE,
             ALIGN_BOTTOM
         } VerAlign;
-    
+
     protected:
         Font *font;
         std::wstring text;
@@ -192,10 +192,10 @@ class Label: public Widget
         bool shadow;
 
     public:
-        Label(Font *font, int x, int y, int r, int g, int b, 
+        Label(Font *font, int x, int y, int r, int g, int b,
                 std::wstring text, bool shadow=true);
         Label(Font *font, int x, int y, int width, int height,
-                HorAlign hAlign, VerAlign vAlign, int r, int g, int b, 
+                HorAlign hAlign, VerAlign vAlign, int r, int g, int b,
                 const std::wstring &text);
 
     public:
@@ -215,12 +215,12 @@ class InputField: public Window, public TimerHandler
         bool cursorVisible;
         char lastChar;
         Uint32 lastKeyUpdate;
-    
+
     public:
-        InputField(int x, int y, int w, int h, const std::wstring &background, 
+        InputField(int x, int y, int w, int h, const std::wstring &background,
                 std::wstring &name, int maxLength, int r, int g, int b, Font *font);
         ~InputField();
-        
+
     public:
         virtual void draw();
         virtual void setParent(Area *a);
@@ -242,9 +242,9 @@ class Checkbox: public Widget
         SDL_Surface *checkedImage, *checkedHighlighted;
         bool &checked;
         bool mouseInside;
-        
+
     public:
-        Checkbox(int x, int y, int width, int height, Font *font, 
+        Checkbox(int x, int y, int width, int height, Font *font,
                 int r, int g, int b, const std::wstring &background,
                 bool &checked);
         virtual ~Checkbox();
@@ -270,7 +270,7 @@ class Picture: public Widget
         int height;
         SDL_Surface *image;
         bool managed;
-        
+
     public:
         Picture(int x, int y, const std::wstring &name, bool transparent=true);
         Picture(int x, int y, SDL_Surface *image);
@@ -284,7 +284,7 @@ class Picture: public Widget
         int getTop() const { return top; };
         int getWidth() const { return width; };
         int getHeight() const { return height; };
-        
+
 };
 
 
@@ -319,4 +319,3 @@ class Slider: public Widget
 
 
 #endif
-

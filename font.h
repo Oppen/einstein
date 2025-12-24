@@ -11,15 +11,15 @@ class Font
     private:
         TTF_Font *font;
         void *data;
-    
+
     public:
         Font(const std::wstring &name, int ptsize);
         ~Font();
 
     public:
-        void draw(SDL_Surface *s, int x, int y, Uint8 r, Uint8 g, Uint8 b, 
+        void draw(SDL_Surface *s, int x, int y, Uint8 r, Uint8 g, Uint8 b,
                 bool shadow, const std::wstring &text);
-        void draw(int x, int y, Uint8 r, Uint8 g, Uint8 b, bool shadow, 
+        void draw(int x, int y, Uint8 r, Uint8 g, Uint8 b, bool shadow,
                 const std::wstring &text);
         int getWidth(const std::wstring &text);
         int getWidth(wchar_t ch);
@@ -29,4 +29,3 @@ class Font
 
 
 #endif
-

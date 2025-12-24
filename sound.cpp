@@ -14,7 +14,7 @@ Sound::Sound()
     Uint16 audio_format = AUDIO_S16; /* 16-bit stereo */
     int audio_channels = 2;
     int audio_buffers = 1024;
-    disabled = Mix_OpenAudio(audio_rate, audio_format, audio_channels, 
+    disabled = Mix_OpenAudio(audio_rate, audio_format, audio_channels,
                 audio_buffers);
     if (disabled)
         std::cout << "Audio is disabled" << std::endl;
@@ -34,15 +34,15 @@ void Sound::play(const std::wstring &name)
 {
     if (disabled || (! enableFx))
         return;
-    
+
     Mix_Chunk *chunk = NULL;
-    
+
     ChunkMap::iterator i = chunkCache.find(name);
     if (i != chunkCache.end())
         chunk = (*i).second;
     else {
         ResDataHolder data(name);
-        chunk = Mix_LoadWAV_RW(SDL_RWFromMem(data.getData(), data.getSize()), 
+        chunk = Mix_LoadWAV_RW(SDL_RWFromMem(data.getData(), data.getSize()),
                 0);
         chunkCache[name] = chunk;
     }
@@ -59,4 +59,3 @@ void Sound::setVolume(float v)
     volume = v;
     enableFx = 0.01 < volume;
 }
-

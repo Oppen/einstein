@@ -16,7 +16,7 @@ Formatter::Formatter(unsigned char *data, int offset)
     offset += 4;
     commands = new Command[cnt];
     commandsCnt = 0;
-    
+
     for (int i = 0; i < cnt; i++) {
         int type = data[offset];
         offset++;
@@ -29,7 +29,7 @@ Formatter::Formatter(unsigned char *data, int offset)
                         fromUtf8((char*)data + offset, size));
                 commandsCnt++;
                 break;
-            
+
             case 2: add_arg<INT_ARG>(data, offset); break;
             case 3: add_arg<STRING_ARG>(data, offset); break;
             case 4: add_arg<FLOAT_ARG>(data, offset); break;
@@ -48,7 +48,7 @@ Formatter::Formatter(unsigned char *data, int offset)
             if ((c.type == INT_ARG) || (c.type == STRING_ARG) ||
                     (c.type == FLOAT_ARG) || (c.type == DOUBLE_ARG))
             {
-                int no = *(int*)c.data.raw;
+                long no = (long)c.data.raw;
                 args[no - 1] = c.type;
             }
         }
@@ -89,10 +89,10 @@ class TemplatedArgValue: public ArgValue
 {
     private:
         T value;
-    
+
     public:
         TemplatedArgValue(const T &v) { value = v; };
-        virtual std::wstring format(Formatter::Command *command) { 
+        virtual std::wstring format(Formatter::Command *command) {
             return toString(value);
         };
 };
@@ -104,7 +104,7 @@ class StrArgValue: public ArgValue
 
     public:
         StrArgValue(const std::wstring &v): value(v) { };
-        virtual std::wstring format(Formatter::Command *command) { 
+        virtual std::wstring format(Formatter::Command *command) {
             return value;
         };
 };
@@ -113,7 +113,7 @@ class StrArgValue: public ArgValue
 std::wstring Formatter::format(std::vector<ArgValue*> &argValues) const
 {
     std::wstring s;
-    int no;
+    long no;
 
     for (int i = 0; i < commandsCnt; i++) {
         Command *cmd = &commands[i];
@@ -122,18 +122,18 @@ std::wstring Formatter::format(std::vector<ArgValue*> &argValues) const
             case TEXT_COMMAND:
                 s += *(std::wstring*)(cmd->data.ptr);
                 break;
-                
+
             case STRING_ARG:
             case INT_ARG:
-                no = *(int*)cmd->data.raw - 1;
-                if (no < (int)argValues.size())
+                no = (long)cmd->data.raw - 1;
+                if (no < (long)argValues.size())
                     s += argValues[no]->format(cmd);
                 break;
 
             default: ;
         }
     }
-    
+
     return s;
 }
 
@@ -141,14 +141,14 @@ std::wstring Formatter::format(va_list ap) const
 {
     if (! argsCnt)
         return getMessage();
-    
+
     std::vector<ArgValue*> argValues;
-    
+
     for (int i = 0; i < argsCnt; i++) {
         switch (args[i]) {
             case INT_ARG:
                 argValues.push_back(new TemplatedArgValue<int>
-                        (va_arg(ap, int))); 
+                        (va_arg(ap, int)));
                 break;
             case STRING_ARG:
                 argValues.push_back(new StrArgValue(va_arg(ap, wchar_t*)));
@@ -165,13 +165,13 @@ std::wstring Formatter::format(va_list ap) const
                 i = argsCnt;
         }
     }
- 
+
     std::wstring s = format(argValues);
 
     for (std::vector<ArgValue*>::iterator i = argValues.begin();
             i != argValues.end(); i++)
         delete *i;
-    
+
     return s;
 }
 
@@ -185,4 +185,3 @@ void Formatter::add_arg(unsigned char *data, int offset)
     *(int*)commands[commandsCnt].data.raw = argNo;
     commandsCnt++;
 }
-

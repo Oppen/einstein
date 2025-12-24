@@ -5,8 +5,8 @@
 #include "exceptions.h"
 
 
-ResourceCompressor::ResourceCompressor() 
-{ 
+ResourceCompressor::ResourceCompressor()
+{
     priority = 1000;
 }
 
@@ -35,7 +35,7 @@ static int writeInt(std::ostream *stream, int v)
         v = v >> 8;
         b[i] = ib;
     }
-    
+
     stream->write((char*)&b, 4);
 
     return 4;
@@ -94,7 +94,7 @@ void ResourceCompressor::closeStream()
 void ResourceCompressor::compress(const std::string &outputFile, bool verbose)
 {
     openStream(outputFile);
-    
+
     int offset = writeHeader();
     for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
         Entry &e = *i;
@@ -107,13 +107,13 @@ void ResourceCompressor::compress(const std::string &outputFile, bool verbose)
     closeStream();
 }
 
-void ResourceCompressor::printDeps(const std::string &outputFile, 
+void ResourceCompressor::printDeps(const std::string &outputFile,
         const std::string &sourceFile)
 {
     std::cout << std::endl << outputFile << ": " << sourceFile << " ";
-    
+
     int width = outputFile.length() + sourceFile.length() + 3;
-    
+
     for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
         Entry &e = *i;
         std::cout << " ";
@@ -125,7 +125,7 @@ void ResourceCompressor::printDeps(const std::string &outputFile,
         std::cout << e.fileName;
         width += len;
     }
-    
+
     std::cout << std::endl;
 }
 
@@ -133,7 +133,7 @@ void ResourceCompressor::printDeps(const std::string &outputFile,
 void ResourceCompressor::writeFooter(int &offset)
 {
     int start = offset;
-    
+
     for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
         Entry &e = *i;
         offset += writeString(stream, e.name);
@@ -143,7 +143,7 @@ void ResourceCompressor::writeFooter(int &offset)
         offset += writeInt(stream, e.comprLevel);
         offset += writeString(stream, e.group);
     }
-        
+
     offset += writeInt(stream, start);
     offset += writeInt(stream, entries.size());
 }
@@ -177,7 +177,7 @@ static int pack(char *in, int inSize, char *out, int maxOutSize, int level)
 
 void ResourceCompressor::readData(const std::wstring &fileName)
 {
-    std::ifstream ifs(toMbcs(fileName).c_str(), 
+    std::ifstream ifs(toMbcs(fileName).c_str(),
             std::ios::in | std::ios::binary);
     if (ifs.fail())
         throw Exception(L"Error opening file '" + fileName + L"'");
@@ -188,7 +188,7 @@ void ResourceCompressor::readData(const std::wstring &fileName)
     ifs.seekg(0, std::ios::beg);
     if (realSize <= 0)
         throw Exception(L"File '" + fileName + L"' has invalid size");
-    
+
     ifs.read((char*)unpackedBuffer.getData(), realSize);
     if (ifs.fail() || (ifs.gcount() != realSize))
         throw Exception(L"Error reading from file '" + fileName + L"'");
@@ -196,7 +196,7 @@ void ResourceCompressor::readData(const std::wstring &fileName)
 
 }
 
-void ResourceCompressor::runFormatter(Formatter *formatter, 
+void ResourceCompressor::runFormatter(Formatter *formatter,
         const std::wstring &fileName)
 {
     unpackedBuffer.setSize(0);
@@ -207,21 +207,18 @@ void ResourceCompressor::runFormatter(Formatter *formatter,
 void ResourceCompressor::compressEntry(Entry &entry, int &offset)
 {
     entry.offset = offset;
-    
+
     if (! entry.formatter)
         readData(entry.fileName);
     else
         runFormatter(entry.formatter, entry.fileName);
     entry.realSize = unpackedBuffer.getSize();
     adjustBuffers(entry.realSize);
-    
+
     entry.packedSize = pack((char*)unpackedBuffer.getData(), entry.realSize,
-            (char*)packedBuffer.getData(), packedBuffer.getSize(), 
+            (char*)packedBuffer.getData(), packedBuffer.getSize(),
             entry.comprLevel);
     stream->write((char*)packedBuffer.getData(), entry.packedSize);
-    
+
     offset += entry.packedSize;
 }
-
-
-

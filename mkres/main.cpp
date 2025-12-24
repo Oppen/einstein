@@ -1,4 +1,4 @@
-#include <cstring>
+#include <string.h>
 #include "compressor.h"
 #include "exceptions.h"
 #include "../unicode.h"
@@ -39,7 +39,7 @@ static void printVersion(int terminate)
 static void parseArgs(int argc, char *argv[])
 {
     int i;
-    
+
     if (argc == 1)
         printHelp(0);
 
@@ -82,7 +82,7 @@ static ResourceCompressor compressor;
 static void parseFile(const std::string &fileName)
 {
     Table table(fileName);
-    
+
     compressor.setPriority(table.getInt(L"priority", 1000));
 
     Table *res = table.getTable(L"resources");
@@ -99,8 +99,8 @@ static void parseFile(const std::string &fileName)
             Formatter *formatter = formatRegistry.get(format);
             if ((0 < format.length()) && (! formatter))
                 throw Exception(L"Unknown format '" + format + L"'");
-            compressor.add(Entry(name, t->getInt(L"compr", 9), 
-                        t->getString(L"group", L""), 
+            compressor.add(Entry(name, t->getInt(L"compr", 9),
+                        t->getString(L"group", L""),
                         t->getString(L"file", name), formatter));
         }
     }
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 {
     int res = 0;
     parseArgs(argc, argv);
-    
+
     try {
         parseFile(sourceFile);
         if (! showDeps)
@@ -129,7 +129,6 @@ int main(int argc, char *argv[])
         std::cerr << L"Error: unknown exception" << std::endl;
         res = 1;
     }
-    
+
     return res;
 }
-

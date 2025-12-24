@@ -12,7 +12,7 @@ class IconSet
         SDL_Surface *largeIcons[6][6][2];
         SDL_Surface *emptyFieldIcon, *emptyHintIcon, *nearHintIcon[2];
         SDL_Surface *sideHintIcon[2], *betweenArrow[2];
-    
+
     public:
         IconSet();
         virtual ~IconSet();
@@ -29,4 +29,3 @@ class IconSet
 
 
 #endif
-

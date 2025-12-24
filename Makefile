@@ -5,7 +5,7 @@
 ########################################
 
 # installation prefix
-PREFIX=/usr/local
+PREFIX=/usr
 
 ########################################
 #
@@ -17,7 +17,8 @@ OPTIMIZE=#-O6 -march=pentium4 -mfpmath=sse -fomit-frame-pointer -funroll-loops
 PROFILER=#-pg
 DEBUG=-ggdb
 CXXFLAGS+=-pipe -Wall $(OPTIMIZE) $(DEBUG) `sdl2-config --cflags` -DPREFIX=L\"$(PREFIX)\" $(PROFILER)
-LNFLAGS=-pipe -lSDL2_ttf -lfreetype `sdl2-config --libs` -lz -lSDL2_mixer $(PROFILER)
+LNFLAGS=-pipe $(PROFILER)
+LIBS=-lSDL2_ttf -lfreetype `sdl2-config --libs` -lz -lSDL2_mixer
 INSTALL=install
 
 TARGET=einstein
@@ -49,10 +50,14 @@ all: $(TARGET)
 
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(LNFLAGS) $(OBJECTS) -o $(TARGET)
+	cd mkres && make
+	cd res && ../mkres/mkres --source resources.descr --output einstein.res
+	$(CXX) $(LNFLAGS) $(OBJECTS) -o $(TARGET) $(LIBS) $(LDFLAGS)
 
 clean:
 	rm -f $(OBJECTS) core* *core $(TARGET) *~
+	cd res && rm -f einstein.res
+	cd mkres && make clean
 
 depend:
 	@makedepend $(SOURCES) 2> /dev/null
@@ -61,7 +66,6 @@ run: $(TARGET)
 	./$(TARGET)
 
 install: $(TARGET)
-	$(INSTALL) -s -D $(TARGET) $(PREFIX)/bin/$(TARGET)
-	$(INSTALL) -D einstein.res $(PREFIX)/share/einstein/res/einstein.res
+	$(INSTALL) -s -D $(TARGET) $(DESTDIR)/$(PREFIX)/games/$(TARGET)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -11,13 +11,13 @@ class Sound
 {
     private:
         bool disabled;
-        
+
         typedef std::map<std::wstring, Mix_Chunk*> ChunkMap;
         ChunkMap chunkCache;
 
         bool enableFx;
         float volume;
-    
+
     public:
         Sound();
         ~Sound();
@@ -32,4 +32,3 @@ extern Sound *sound;
 
 
 #endif
-
