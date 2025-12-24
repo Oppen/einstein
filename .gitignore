@@ -1,0 +1,7 @@
+/target
+**.o
+**/.*
+!.gitignore
+res/einstein.res
+einstein
+mkres/mkres
