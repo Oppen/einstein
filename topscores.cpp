@@ -9,7 +9,7 @@
 TopScores::TopScores()
 {
     Storage *storage = getStorage();
-    
+
     for (int i = 0; i < MAX_SCORES; i++) {
         int score = storage->get(L"top_score_" + toString(i), -1);
         if (score < 0)
@@ -17,7 +17,7 @@ TopScores::TopScores()
         std::wstring name = storage->get(L"top_name_" + toString(i), L"");
         add(name, score);
     }
-    
+
     modifed = false;
 }
 
@@ -38,7 +38,7 @@ int TopScores::add(const std::wstring &name, int score)
         }
         return -1;
     }
-    
+
     int pos = 0;
     for (ScoresList::iterator i = scores.begin(); i != scores.end(); i++) {
         Entry &e = *i;
@@ -66,13 +66,13 @@ void TopScores::save()
 
     Storage *storage = getStorage();
     int no = 0;
-    
+
     for (auto &e : scores) {
         storage->set(L"top_name_" + toString(no), e.name);
         storage->set(L"top_score_" + toString(no), e.score);
         no++;
     }
-    
+
     storage->flush();
     modifed = false;
 }
@@ -99,13 +99,13 @@ class ScoresWindow: public Window
 };
 
 
-ScoresWindow::ScoresWindow(int x, int y, TopScores *scores, int highlight): 
+ScoresWindow::ScoresWindow(int x, int y, TopScores *scores, int highlight):
                 Window(x, y, 320, 350, L"blue.bmp")
 {
-    Font titleFont(L"nova.ttf", 26);
-    Font entryFont(L"laudcn2.ttf", 14);
-    Font timeFont(L"luximb.ttf", 14);
-    
+    Font titleFont(L"DejaVuSans.ttf", 26);
+    Font entryFont(L"DejaVuSans.ttf", 14);
+    Font timeFont(L"DejaVuSans.ttf", 14);
+
     std::wstring txt = msg(L"topScores");
     int w = titleFont.getWidth(txt);
     titleFont.draw(background, (320 - w) / 2, 15, 255,255,0, true, txt);
@@ -135,11 +135,11 @@ void showScoresWindow(Area *parentArea, TopScores *scores, int highlight)
 {
     Area area;
 
-    Font font(L"laudcn2.ttf", 16);
+    Font font(L"DejaVuSans.ttf", 16);
     area.add(parentArea);
     area.add(new ScoresWindow(240, 125, scores, highlight));
     ExitCommand exitCmd(area);
-    area.add(new Button(348, 430, 90, 25, &font, 255,255,0, L"blue.bmp", 
+    area.add(new Button(348, 430, 90, 25, &font, 255,255,0, L"blue.bmp",
                 msg(L"ok"), &exitCmd));
     area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd));
     area.run();
@@ -149,17 +149,17 @@ void showScoresWindow(Area *parentArea, TopScores *scores, int highlight)
 std::wstring enterNameDialog(Area *parentArea)
 {
     Area area;
-    
-    Font font(L"laudcn2.ttf", 16);
+
+    Font font(L"DejaVuSans.ttf", 16);
     area.add(parentArea);
     area.add(new Window(170, 280, 460, 100, L"blue.bmp"));
     Storage *storage = getStorage();
     std::wstring name = storage->get(L"lastName", msg(L"anonymous"));
     area.add(new Label(&font, 180, 300, 255,255,0, msg(L"enterName")));
-    area.add(new InputField(350, 300, 270, 26, L"blue.bmp", name, 20,  
+    area.add(new InputField(350, 300, 270, 26, L"blue.bmp", name, 20,
                 255,255,0,  &font));
     ExitCommand exitCmd(area);
-    area.add(new Button(348, 340, 90, 25, &font, 255,255,0, L"blue.bmp", 
+    area.add(new Button(348, 340, 90, 25, &font, 255,255,0, L"blue.bmp",
                 msg(L"ok"), &exitCmd));
     area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd));
     area.add(new KeyAccel(SDLK_RETURN, &exitCmd));
@@ -167,5 +167,3 @@ std::wstring enterNameDialog(Area *parentArea)
     storage->set(L"lastName", name);
     return name;
 }
-
-

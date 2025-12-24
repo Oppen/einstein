@@ -90,13 +90,11 @@ resources = {
     { name = "title.bmp" }
     { name = "marble1.bmp" }
     { name = "blue.bmp" }
-    { name = "luximb.ttf" }
+    { name = "DejaVuSans.ttf" }
     { name = "redpattern.bmp" }
     { name = "greenpattern.bmp" }
     { name = "darkpattern.bmp" }
     { name = "nova.bmp" }
-    { name = "nova.ttf" }
-    { name = "laudcn2.ttf" }
     { name = "btn.bmp" }
     { name = "rules.txt", format = "messages" group = "messages" }
     { name = "rules_ru.txt", format = "messages" group = "messages" }

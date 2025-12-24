@@ -37,9 +37,9 @@ class SavedGame
 SavedGame::SavedGame(const std::wstring &s): fileName(s)
 {
     exists = false;
-    
+
     try {
-        std::ifstream stream(toMbcs(fileName).c_str(), std::ifstream::in | 
+        std::ifstream stream(toMbcs(fileName).c_str(), std::ifstream::in |
                 std::ifstream::binary);
         if (stream.fail())
             throw Exception(L"Can't open file");
@@ -56,10 +56,10 @@ class OkCommand: public Command
     private:
         Area &area;
         bool *ok;
-    
+
     public:
         OkCommand(Area &a, bool *o): area(a) { ok = o; };
-        
+
         virtual void doAction() {
             *ok = true;
             area.finishEventLoop();
@@ -80,14 +80,14 @@ class SaveCommand: public Command
 
     public:
         SaveCommand(SavedGame &sg, Font *f, Area *area, bool *s,
-                const std::wstring &dflt, Game *g): savedGame(sg), defaultName(dflt) 
+                const std::wstring &dflt, Game *g): savedGame(sg), defaultName(dflt)
         {
             parentArea = area;
             saved = s;
             font = f;
             game = g;
         };
-        
+
     public:
         virtual void doAction() {
             Area area;
@@ -99,13 +99,13 @@ class SaveCommand: public Command
             else
                 name = defaultName;
             area.add(new Label(font, 180, 300, 255,255,0, msg(L"enterGame")));
-            area.add(new InputField(340, 300, 280, 26, L"blue.bmp", name, 20,  
+            area.add(new InputField(340, 300, 280, 26, L"blue.bmp", name, 20,
                         255,255,0,  font));
             ExitCommand exitCmd(area);
             OkCommand okCmd(area, saved);
-            area.add(new Button(310, 340, 80, 25, font, 255,255,0, L"blue.bmp", 
+            area.add(new Button(310, 340, 80, 25, font, 255,255,0, L"blue.bmp",
                         msg(L"ok"), &okCmd));
-            area.add(new Button(400, 340, 80, 25, font, 255,255,0, L"blue.bmp", 
+            area.add(new Button(400, 340, 80, 25, font, 255,255,0, L"blue.bmp",
                         msg(L"cancel"), &exitCmd));
             area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd));
             area.add(new KeyAccel(SDLK_RETURN, &okCmd));
@@ -124,7 +124,7 @@ class SaveCommand: public Command
                         throw Exception(L"Error saving game");
                     stream.close();
                     *saved = true;
-                } catch (...) { 
+                } catch (...) {
                     showMessageWindow(&area, L"redpattern.bmp", 300, 80, font,
                             255,255,255, msg(L"saveError"));
                 }
@@ -140,7 +140,7 @@ class SaveCommand: public Command
 static std::wstring getSavesPath()
 {
 #ifndef WIN32
-    std::wstring path(fromMbcs(getenv("HOME")) + 
+    std::wstring path(fromMbcs(getenv("HOME")) +
             std::wstring(L"/.einstein/save"));
 #else
     std::wstring path(getStorage()->get(L"path", L""));
@@ -160,24 +160,24 @@ typedef std::list<SavedGame> SavesList;
 static void showListWindow(SavesList &list, Command **commands,
         const std::wstring &title, Area &area, Font *font)
 {
-    Font titleFont(L"nova.ttf", 26);
+    Font titleFont(L"DejaVuSans.ttf", 26);
 
     area.add(new Window(250, 90, 300, 420, L"blue.bmp"));
     area.add(new Label(&titleFont, 250, 95, 300, 40, Label::ALIGN_CENTER,
                 Label::ALIGN_MIDDLE, 255,255,0, title));
     ExitCommand exitCmd(area);
-    area.add(new Button(360, 470, 80, 25, font, 255,255,0, L"blue.bmp", 
+    area.add(new Button(360, 470, 80, 25, font, 255,255,0, L"blue.bmp",
                 msg(L"close"), &exitCmd));
-    area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd)); 
+    area.add(new KeyAccel(SDLK_ESCAPE, &exitCmd));
 
     int pos = 150;
     int no = 0;
     for (auto &game : list) {
-        area.add(new Button(260, pos, 280, 25, font, 255,255,255, L"blue.bmp", 
+        area.add(new Button(260, pos, 280, 25, font, 255,255,255, L"blue.bmp",
                     game.getName(), commands[no++]));
         pos += 30;
     }
-    
+
     area.run();
 }
 
@@ -185,27 +185,27 @@ static void showListWindow(SavesList &list, Command **commands,
 bool saveGame(Area *parentArea, Game *game)
 {
     std::wstring path = getSavesPath();
-    
+
     Area area;
     area.add(parentArea, false);
-    Font font(L"laudcn2.ttf", 14);
+    Font font(L"DejaVuSans.ttf", 14);
     bool saved = false;
-    
+
     SavesList list;
     Command **commands = new Command*[MAX_SLOTS];
     for (int i = 0; i < MAX_SLOTS; i++) {
         SavedGame sg(path + L"/" + toString(i) + L".sav");
         list.push_back(sg);
-        commands[i] = new SaveCommand(*(--(list.end())), &font, 
+        commands[i] = new SaveCommand(*(--(list.end())), &font,
                 &area, &saved, L"game " + toString(i+1), game);
     }
-    
+
     showListWindow(list, commands, msg(L"saveGame"), area, &font);
 
     for (int i = 0; i < MAX_SLOTS; i++)
         delete commands[i];
     delete[] commands;
-   
+
     return saved;
 }
 
@@ -221,18 +221,18 @@ class LoadCommand: public Command
         Game **game;
 
     public:
-        LoadCommand(SavedGame &sg, Font *f, Area *area, Game **g): 
+        LoadCommand(SavedGame &sg, Font *f, Area *area, Game **g):
             savedGame(sg)
         {
             parentArea = area;
             font = f;
             game = g;
         };
-        
+
     public:
         virtual void doAction() {
             try {
-                std::ifstream stream(toMbcs(savedGame.getFileName()).c_str(), 
+                std::ifstream stream(toMbcs(savedGame.getFileName()).c_str(),
                         std::ifstream::in | std::ifstream::binary);
                 if (stream.fail())
                     throw Exception(L"Error opening save file");
@@ -242,7 +242,7 @@ class LoadCommand: public Command
                     throw Exception(L"Error loading game");
                 stream.close();
                 *game = g;
-            } catch (...) { 
+            } catch (...) {
                 showMessageWindow(parentArea, L"redpattern.bmp", 300, 80, font,
                         255,255,255, L"Error loadng game");
             }
@@ -254,31 +254,30 @@ class LoadCommand: public Command
 Game* loadGame(Area *parentArea)
 {
     std::wstring path = getSavesPath();
-    
+
     Area area;
     area.add(parentArea, false);
-    Font font(L"laudcn2.ttf", 14);
-    
+    Font font(L"DejaVuSans.ttf", 14);
+
     Game *newGame = NULL;
-    
+
     SavesList list;
     Command **commands = new Command*[MAX_SLOTS];
     for (int i = 0; i < MAX_SLOTS; i++) {
         SavedGame sg(path + L"/" + toString(i) + L".sav");
         list.push_back(sg);
         if (sg.isExists())
-            commands[i] = new LoadCommand(*(--(list.end())), &font, &area, 
+            commands[i] = new LoadCommand(*(--(list.end())), &font, &area,
                     &newGame);
         else
             commands[i] = NULL;
     }
-    
+
     showListWindow(list, commands, msg(L"loadGame"), area, &font);
 
     for (int i = 0; i < MAX_SLOTS; i++)
         delete commands[i];
     delete[] commands;
-   
+
     return newGame;
 }
-

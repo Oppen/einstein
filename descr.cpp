@@ -61,7 +61,7 @@ class TextParser
         TextPage* getPage(unsigned int no);
 
     private:
-        void addLine(TextPage *page, std::wstring &line, int &curPosY, 
+        void addLine(TextPage *page, std::wstring &line, int &curPosY,
                 int &lineWidth);
         void parseNextPage();
         bool isImage(const std::wstring &name);
@@ -93,7 +93,7 @@ class Description
 
         unsigned int textHeight;	// Vysota stroki teksta
         TextParser *text;
-        
+
     public:
         Description(Area *parentArea);
         ~Description();
@@ -120,7 +120,7 @@ class CursorCommand: public Command
     public:
         CursorCommand(int step, Description &d, unsigned int *v);
         virtual ~CursorCommand() { };
-        
+
     public:
         virtual void doAction();	// Obrabatyvaet sobytija
 };
@@ -139,11 +139,11 @@ Description::Description(Area *parentArea)
 {
     currentPage = 0;
     //area.add(parentArea, false);
-    titleFont = new Font(L"nova.ttf", 26);
-    buttonFont = new Font(L"laudcn2.ttf", 14);
-    textFont = new Font(L"laudcn2.ttf", 16);
+    titleFont = new Font(L"DejaVuSans.ttf", 26);
+    buttonFont = new Font(L"DejaVuSans.ttf", 14);
+    textFont = new Font(L"DejaVuSans.ttf", 16);
     textHeight = (int)(textFont->getHeight(L"A") * 1.0);
-    text = new TextParser(msg(L"rulesText"), *textFont, START_X, START_Y, 
+    text = new TextParser(msg(L"rulesText"), *textFont, START_X, START_Y,
                 CLIENT_WIDTH, CLIENT_HEIGHT);
     prevCmd = new CursorCommand(-1, *this, &currentPage);
     nextCmd = new CursorCommand(1, *this, &currentPage);
@@ -287,7 +287,7 @@ void TextParser::parseNextPage()
 {
     if (tokenizer.isFinished())
         return;
-    
+
     int curPosY = 0;
     int lineWidth = 0;
     TextPage *page = new TextPage();
@@ -360,4 +360,3 @@ TextPage* TextParser::getPage(unsigned int no)
     else
         return pages[no];
 }
-

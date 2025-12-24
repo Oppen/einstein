@@ -33,7 +33,7 @@ void GameBackground::draw()
     screen.draw(8, 10, tile);
     SDL_FreeSurface(tile);
 
-    Font titleFont(L"nova.ttf", 28);
+    Font titleFont(L"DejaVuSans.ttf", 28);
     titleFont.draw(screen.getSurface(), 20, 20, 255,255,0, true,
             msg(L"einsteinPuzzle"));
 }
@@ -87,7 +87,7 @@ Watch::Watch()
 {
     lastRun = elapsed = lastUpdate = 0;
     stop();
-    font = new Font(L"luximb.ttf", 16);
+    font = new Font(L"DejaVuSans.ttf", 16);
 }
 
 Watch::Watch(std::istream &stream)
@@ -95,7 +95,7 @@ Watch::Watch(std::istream &stream)
     elapsed = readInt(stream);
     lastUpdate = 0;
     stop();
-    font = new Font(L"luximb.ttf", 16);
+    font = new Font(L"DejaVuSans.ttf", 16);
 }
 
 Watch::~Watch()
@@ -175,7 +175,7 @@ class PauseGameCommand: public Command
             watch->stop();
             Area area;
             area.add(background, false);
-            Font font(L"laudcn2.ttf", 16);
+            Font font(L"DejaVuSans.ttf", 16);
             area.add(new Window(280, 275, 240, 50, L"greenpattern.bmp", 6));
             area.add(new Label(&font, 280, 275, 240, 50, Label::ALIGN_CENTER,
                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"paused")));
@@ -206,7 +206,7 @@ class WinCommand: public Command
         virtual void doAction() {
             sound->play(L"applause.wav");
             watch->stop();
-            Font font(L"laudcn2.ttf", 20);
+            Font font(L"DejaVuSans.ttf", 20);
             showMessageWindow(gameArea, L"marble1.bmp",
                     500, 70, &font, 255,0,0, msg(L"won"));
             gameArea->draw();
@@ -254,8 +254,8 @@ class FailCommand: public Command
             sound->play(L"glasbk2.wav");
             bool restart = false;
             bool newGame = false;
-            Font font(L"laudcn2.ttf", 24);
-            Font btnFont(L"laudcn2.ttf", 14);
+            Font font(L"DejaVuSans.ttf", 24);
+            Font btnFont(L"DejaVuSans.ttf", 14);
             Area area;
             area.add(gameArea);
             area.add(new Window(220, 240, 360, 140, L"redpattern.bmp", 6));
@@ -326,7 +326,7 @@ class CheatCommand: public Command
         CheatCommand(Area *a) { gameArea = a; };
 
         virtual void doAction() {
-            Font font(L"nova.ttf", 30);
+            Font font(L"DejaVuSans.ttf", 30);
             showMessageWindow(gameArea, L"darkpattern.bmp",
                     500, 100, &font, 255,255,255,
                     msg(L"iddqd"));
@@ -472,7 +472,7 @@ void Game::pleaseWait()
     drawWallpaper(L"rain.bmp");
     Window window(230, 260, 340, 80, L"greenpattern.bmp", 6);
     window.draw();
-    Font font(L"laudcn2.ttf", 16);
+    Font font(L"DejaVuSans.ttf", 16);
     Label label(&font, 280, 275, 240, 50, Label::ALIGN_CENTER,
                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"loading"));
     label.draw();
@@ -529,7 +529,7 @@ void Game::restart()
 void Game::run()
 {
     Area area;
-    Font btnFont(L"laudcn2.ttf", 14);
+    Font btnFont(L"DejaVuSans.ttf", 14);
 
     area.setTimer(300, watch);
 
