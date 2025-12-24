@@ -58,13 +58,13 @@ SDL_Surface* loadImage(const std::wstring &name, bool transparent)
     if (! s)
         throw Exception(L"Error loading " + name);
     // SDL_Surface *screenS = SDL_DisplayFormat(s);
-    SDL_FreeSurface(s);
+    // SDL_FreeSurface(s);
     // if (! screenS)
     //     throw Exception(L"Error translating to screen format " + name);
     // if (transparent)
     //     SDL_SetColorKey(screenS, SDL_SRCCOLORKEY, getCornerPixel(screenS));
     // return screenS;
-    return NULL;
+    return s;
 }
 
 

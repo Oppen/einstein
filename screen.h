@@ -10,30 +10,6 @@
 #include <list>
 
 
-class VideoMode
-{
-    private:
-        static const int width = 640;
-        static const int height = 480;
-        int bpp;
-        bool fullScreen;
-
-    public:
-        VideoMode(int w, int h, int bpp, bool fullscreen)
-        {
-            assert(w == width && h == height);
-            this->bpp = bpp;
-            this->fullScreen = fullscreen;
-        }
-
-    public:
-        int getWidth() const { return width; };
-        int getHeight() const { return height; };
-        int getBpp() const { return bpp; };
-        bool isFullScreen() const { return fullScreen; };
-};
-
-
 class Screen
 {
     private:
@@ -57,11 +33,9 @@ class Screen
         ~Screen();
 
     public:
-        const VideoMode getVideoMode() const;
         int getWidth() const;
         int getHeight() const;
-        void setMode(const VideoMode& mode);
-        std::vector<VideoMode> getFullScreenModes() const;
+        void setFullScreen(bool enable);
         void centerMouse();
         void setMouseImage(SDL_Surface *image);
         void hideMouse();

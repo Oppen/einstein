@@ -16,15 +16,14 @@ Screen screen;
 static void initScreen()
 {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-        throw Exception(std::wstring(L"Error initializing SDL: ") + 
+        throw Exception(std::wstring(L"Error initializing SDL: ") +
                 fromMbcs(SDL_GetError()));
     atexit(SDL_Quit);
     if (TTF_Init())
         throw Exception(L"Error initializing font engine");
-    screen.setMode(VideoMode(800, 600, 24, 
-                getStorage()->get(L"fullscreen", 1) != 0));
+    screen.setFullScreen(getStorage()->get(L"fullscreen", 1) != 0);
     screen.initCursors();
-    
+
     SDL_Surface *mouse = loadImage(L"cursor.bmp");
     SDL_SetColorKey(mouse, SDL_TRUE, SDL_MapRGB(mouse->format, 0, 0, 0));
     screen.setMouseImage(mouse);
@@ -55,7 +54,7 @@ static void initAudio()
 static std::wstring getResourcesPath(const std::wstring& path)
 {
     int idx = path.find_last_of(L'/');
-    return path.substr(0, idx) + L"/../../"; 
+    return path.substr(0, idx) + L"/../../";
 }
 #endif
 
@@ -63,7 +62,7 @@ static void loadResources(const std::wstring &selfPath)
 {
     StringList dirs;
 #ifdef WIN32
-    dirs.push_back(getStorage()->get(L"path", L"") + L"\\res"); 
+    dirs.push_back(getStorage()->get(L"path", L"") + L"\\res");
 #else
 #ifdef __APPLE__
     dirs.push_back(getResourcesPath(selfPath));
@@ -84,7 +83,7 @@ int main(int argc, char *argv[])
 #ifndef WIN32
     ensureDirExists(fromMbcs(getenv("HOME")) + std::wstring(L"/.einstein"));
 #endif
-    
+
     try {
         loadResources(fromUtf8(argv[0]));
         initScreen();
@@ -97,7 +96,6 @@ int main(int argc, char *argv[])
         std::cerr << L"ERROR: Unknown exception" << std::endl;
     }
     screen.doneCursors();
-    
+
     return 0;
 }
-

@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include "screen.h"
 #include "SDL_render.h"
+#include "SDL_video.h"
 #include "exceptions.h"
 #include "unicode.h"
 
@@ -17,6 +18,7 @@ Screen::Screen()
                                                 SDL_PIXELFORMAT_ARGB8888,
                                                 SDL_TEXTUREACCESS_STREAMING,
                                                 640, 480);
+    SDL_RenderSetLogicalSize(renderer, getWidth(), getHeight());
     mouseImage = NULL;
     mouseSave = NULL;
     mouseVisible = false;
@@ -33,48 +35,19 @@ Screen::~Screen()
 }
 
 
-const VideoMode Screen::getVideoMode() const
-{
-    return VideoMode(screen->w, screen->h, screen->format->BitsPerPixel, fullScreen);
-}
-
-
-void Screen::setMode(const VideoMode& mode)
-{
-    fullScreen = mode.isFullScreen();
-
-    int flags = SDL_SWSURFACE /*| SDL_OPENGL*/;
-    if (fullScreen)
-        flags = flags | SDL_WINDOW_FULLSCREEN;
-    SDL_RenderSetLogicalSize(renderer, mode.getWidth(), mode.getHeight());
-    if (! screen)
-        throw Exception(L"Couldn't set video mode: " +
-                fromMbcs((SDL_GetError())));
-}
-
-
-std::vector<VideoMode> Screen::getFullScreenModes() const
-{
-    std::vector<VideoMode> modes;
-    return modes;
-}
-
-
 int Screen::getWidth() const
 {
-    if (screen)
-        return screen->w;
-    else
-        throw Exception(L"No video mode selected");
+    return 1024;
 }
 
 
 int Screen::getHeight() const
 {
-    if (screen)
-        return screen->h;
-    else
-        throw Exception(L"No video mode selected");
+    return 768;
+}
+
+void Screen::setFullScreen(bool enable) {
+    SDL_SetWindowFullscreen(window, (int)enable * SDL_WINDOW_FULLSCREEN_DESKTOP);
 }
 
 void Screen::centerMouse()

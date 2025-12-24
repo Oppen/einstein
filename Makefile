@@ -15,7 +15,7 @@ PREFIX=/usr/local
 
 OPTIMIZE=#-O6 -march=pentium4 -mfpmath=sse -fomit-frame-pointer -funroll-loops
 PROFILER=#-pg
-DEBUG=#-ggdb
+DEBUG=-ggdb
 CXXFLAGS+=-pipe -Wall $(OPTIMIZE) $(DEBUG) `sdl2-config --cflags` -DPREFIX=L\"$(PREFIX)\" $(PROFILER)
 LNFLAGS=-pipe -lSDL2_ttf -lfreetype `sdl2-config --libs` -lz -lSDL2_mixer $(PROFILER)
 INSTALL=install
