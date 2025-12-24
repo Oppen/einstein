@@ -96,7 +96,8 @@ void ResourceCompressor::compress(const std::string &outputFile, bool verbose)
     openStream(outputFile);
     
     int offset = writeHeader();
-    for (auto &e : entries) {
+    for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
+        Entry &e = *i;
         compressEntry(e, offset);
         if (verbose)
             showEntryStat(e);
@@ -113,7 +114,8 @@ void ResourceCompressor::printDeps(const std::string &outputFile,
     
     int width = outputFile.length() + sourceFile.length() + 3;
     
-    for (auto &e : entries) {
+    for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
+        Entry &e = *i;
         std::cout << " ";
         int len = e.fileName.length() + 1;
         if (len + width > 77) {
@@ -132,7 +134,8 @@ void ResourceCompressor::writeFooter(int &offset)
 {
     int start = offset;
     
-    for (auto &e : entries) {
+    for (Entries::iterator i = entries.begin(); i != entries.end(); i++) {
+        Entry &e = *i;
         offset += writeString(stream, e.name);
         offset += writeInt(stream, e.realSize);
         offset += writeInt(stream, e.offset);

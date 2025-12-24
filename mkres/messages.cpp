@@ -181,15 +181,17 @@ Message::Message(const std::wstring &msg)
 
 Message::~Message()
 {
-    for (auto c : commands)
-        delete c;
+    for (Commands::iterator i = commands.begin(); i != commands.end(); i++)
+        delete *i;
 }
 
 int Message::save(Buffer &buffer)
 {
     int sz = buffer.putInteger(commands.size());
-    for (auto cmd : commands)
+    for (Commands::iterator i = commands.begin(); i != commands.end(); i++) {
+        MsgCommand *cmd = *i;
         sz += cmd->write(buffer);
+    }
     return sz;
 }
 
@@ -205,8 +207,8 @@ Messages::Messages()
 
 Messages::~Messages()
 {
-    for (auto &msg : messages)
-        delete msg.second.message;
+    for (MsgMap::iterator i = messages.begin(); i != messages.end(); i++)
+        delete (*i).second.message;
 }
 
 void Messages::add(const std::wstring &key, const std::wstring &msg)
@@ -235,8 +237,8 @@ int Messages::writeHeader(Buffer &buffer)
 
 int Messages::writeMessages(Buffer &buffer, int offset)
 {
-    for (auto &msg : messages) {
-        MsgEntry &e = msg.second;
+    for (MsgMap::iterator i = messages.begin(); i != messages.end(); i++) {
+        MsgEntry &e = (*i).second;
         e.offset = offset;
         offset += e.message->save(buffer);
     }
@@ -246,10 +248,10 @@ int Messages::writeMessages(Buffer &buffer, int offset)
 int Messages::writeDirectory(Buffer &buffer)
 {
     int offset = buffer.putInteger(messages.size());
-    for (auto &msg : messages) {
-        const std::wstring &name = msg.first;
+    for (MsgMap::iterator i = messages.begin(); i != messages.end(); i++) {
+        const std::wstring &name = (*i).first;
         offset += buffer.putUtf8(name);
-        offset += buffer.putInteger(msg.second.offset);
+        offset += buffer.putInteger((*i).second.offset);
     }
     return offset;
 }
