@@ -144,10 +144,8 @@ void Screen::flush()
 {
     Uint32 format;
     int access, w, h;
+    SDL_UpdateTexture(texture, NULL, screen->pixels, screen->pitch);
     SDL_RenderClear(renderer);
-    SDL_QueryTexture(texture, &format, &access, &w, &h);
-    SDL_Surface *s = SDL_ConvertSurfaceFormat(screen, format, 0);
-    SDL_UpdateTexture(texture, NULL, s, s->pitch);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
 }
