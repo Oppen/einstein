@@ -51,7 +51,8 @@ void VertHints::reset(Rules &r)
     numbersArr.clear();
 
     int no = 0;
-    for (auto rule : r) {
+    for (Rules::iterator i = r.begin(); i != r.end(); i++) {
+        Rule *rule = *i;
         if (rule->getShowOpts() == Rule::SHOW_VERT) {
             rules.push_back(rule);
             excludedRules.push_back(NULL);

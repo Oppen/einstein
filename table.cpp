@@ -10,9 +10,9 @@
 
 class IntValue: public Value
 {
-    private: 
+    private:
         int value;
-    
+
     public:
         IntValue(int val) { value = val; };
         virtual ~IntValue() { };
@@ -22,8 +22,8 @@ class IntValue: public Value
         virtual int asInt() const { return value; };
         virtual double asDouble() const { return value; };
         virtual std::wstring asString() const { return toString(value); };
-        virtual ::Table* asTable() const { 
-            throw Exception(L"Can't convert integer to table"); 
+        virtual ::Table* asTable() const {
+            throw Exception(L"Can't convert integer to table");
         };
         virtual Value* clone() const { return new IntValue(value); };
 };
@@ -31,9 +31,9 @@ class IntValue: public Value
 
 class DoubleValue: public Value
 {
-    private: 
+    private:
         double value;
-    
+
     public:
         DoubleValue(double val) { value = val; };
         virtual ~DoubleValue() { };
@@ -43,8 +43,8 @@ class DoubleValue: public Value
         virtual int asInt() const { return (int)value; };
         virtual double asDouble() const { return value; };
         virtual std::wstring asString() const { return toString(value); };
-        virtual ::Table* asTable() const { 
-            throw Exception(L"Can't convert double to table"); 
+        virtual ::Table* asTable() const {
+            throw Exception(L"Can't convert double to table");
         };
         virtual Value* clone() const { return new DoubleValue(value); };
 };
@@ -52,9 +52,9 @@ class DoubleValue: public Value
 
 class StringValue: public Value
 {
-    private: 
+    private:
         std::wstring value;
-    
+
     public:
         StringValue(const std::wstring& val): value(val) { };
         virtual ~StringValue() { };
@@ -64,8 +64,8 @@ class StringValue: public Value
         virtual int asInt() const { return strToInt(value); };
         virtual double asDouble() const { return strToDouble(value); };
         virtual std::wstring asString() const { return value; };
-        virtual ::Table* asTable() const { 
-            throw Exception(L"Can't convert string to table"); 
+        virtual ::Table* asTable() const {
+            throw Exception(L"Can't convert string to table");
         };
         virtual Value* clone() const { return new StringValue(value); };
 };
@@ -73,27 +73,27 @@ class StringValue: public Value
 
 class TableValue: public Value
 {
-    private: 
+    private:
         ::Table *value;
-    
+
     public:
         TableValue(::Table *val) { value = val; };
         virtual ~TableValue() { delete value; };
 
     public:
         virtual Type getType() const { return Value::Table; };
-        virtual int asInt() const { 
-            throw Exception(L"Can't convert table to int"); 
+        virtual int asInt() const {
+            throw Exception(L"Can't convert table to int");
         };
-        virtual double asDouble() const { 
-            throw Exception(L"Can't convert table to double"); 
+        virtual double asDouble() const {
+            throw Exception(L"Can't convert table to double");
         };
-        virtual std::wstring asString() const { 
-            throw Exception(L"Can't convert table to string"); 
+        virtual std::wstring asString() const {
+            throw Exception(L"Can't convert table to string");
         };
         virtual ::Table* asTable() const { return value; };
-        virtual Value* clone() const { 
-            return new TableValue(new ::Table(*value)); 
+        virtual Value* clone() const {
+            return new TableValue(new ::Table(*value));
         };
 };
 
@@ -106,7 +106,7 @@ Table::Table(const Table &table)
 Table::Table(const std::string &fileName)
 {
     lastArrayIndex = 0;
-    std::ifstream stream(fileName.c_str(), 
+    std::ifstream stream(fileName.c_str(),
             std::ios::binary | std::ios::in);
     if (! stream.good())
         throw Exception(L"Error opening file '" + fromMbcs(fileName) + L"");
@@ -129,21 +129,22 @@ Table::Table()
 
 Table::~Table()
 {
-    for (auto f : fields)
-        delete f.second;
+    for (ValuesMap::iterator i = fields.begin(); i != fields.end(); i++)
+        delete (*i).second;
 }
 
 
 Table& Table::operator = (const Table &table)
 {
-    if (this == &table) 
+    if (this == &table)
         return *this;
 
     fields.clear();
     lastArrayIndex = table.lastArrayIndex;
-    for (const auto &f : table.fields)
-        fields[f.first] = f.second->clone();
-    
+    for (ValuesMap::const_iterator i = table.fields.begin();
+            i != table.fields.end(); i++)
+        fields[(*i).first] = (*i).second->clone();
+
     return *this;
 }
 
@@ -153,13 +154,13 @@ static Value* lexToValue(Lexal &lexal, const Lexeme &lexeme)
     switch (lexeme.getType())
     {
         case Lexeme::Ident:
-        case Lexeme::String: 
+        case Lexeme::String:
             return new StringValue(lexeme.getContent());
-        case Lexeme::Integer: 
+        case Lexeme::Integer:
             return new IntValue(strToInt(lexeme.getContent()));
-        case Lexeme::Float: 
+        case Lexeme::Float:
             return new DoubleValue(strToDouble(lexeme.getContent()));
-        case Lexeme::Symbol: 
+        case Lexeme::Symbol:
             if (L"{" == lexeme.getContent())
                 return new TableValue(new Table(lexal, lexeme.getLine(),
                             lexeme.getPos()));
@@ -187,7 +188,7 @@ void Table::parse(Lexal &lexal, bool needBracket, int startLine, int startPos)
 {
     Lexeme lex;
     bool read = true;
-    
+
     while (true) {
         if (read) {
             lex = lexal.getNext();
@@ -260,24 +261,24 @@ static std::wstring printValue(Value *value, bool butify, int spaces)
         return L"";
 
     switch (value->getType()) {
-        case Value::Integer: 
+        case Value::Integer:
             return toString(value->asInt());
-            
-        case Value::Double: 
+
+        case Value::Double:
             {
                 std::wstring s = toString(value->asDouble());
                 if (s.find(L'.') >= s.length())
                     s.append(L".0");
                 return s;
             }
-            
-        case Value::String: 
+
+        case Value::String:
             return encodeString(value->asString());
 
-        case Value::Table: 
+        case Value::Table:
             return value->asTable()->toString(true, butify, spaces);
     }
-        
+
     return L"";
 }
 
@@ -321,11 +322,13 @@ std::wstring Table::toString(bool printBraces, bool butify, int spaces) const
         res += butify ? L"{\n" : L"{";
     bool printNames = ! isArray();
 
-    for (const auto &f : fields) {
-        const std::wstring &name = f.first;
-        Value *value = f.second;
+    for (ValuesMap::const_iterator i = fields.begin(); i != fields.end();
+            i++)
+    {
+        const std::wstring &name = (*i).first;
+        Value *value = (*i).second;
         if (butify)
-            for (int j = 0; j < spaces; j++) 
+            for (int j = 0; j < spaces; j++)
                 res += L" ";
         else
             res += L" ";
@@ -343,7 +346,7 @@ std::wstring Table::toString(bool printBraces, bool butify, int spaces) const
             res += L" }";
         else {
             int ident = (spaces >= 4) ? spaces - 4 : 0;
-            for (int j = 0; j < ident; j++) 
+            for (int j = 0; j < ident; j++)
                 res += L" ";
             res += L"}";
         }
@@ -362,7 +365,7 @@ Value::Type Table::getType(const std::wstring &key) const
 }
 
 
-std::wstring Table::getString(const std::wstring &key, 
+std::wstring Table::getString(const std::wstring &key,
         const std::wstring &dflt) const
 {
     ValuesMap::const_iterator i = fields.find(key);
@@ -418,7 +421,7 @@ void Table::setTable(const std::wstring &key, Table *value)
 
 void Table::save(const std::wstring &fileName) const
 {
-    std::ofstream stream(toMbcs(fileName).c_str(), std::ios::out 
+    std::ofstream stream(toMbcs(fileName).c_str(), std::ios::out
             | std::ios::binary);
     if (! stream.good())
         throw Exception(L"Can't open '" + fileName + L"' for writing");
@@ -428,4 +431,3 @@ void Table::save(const std::wstring &fileName) const
         throw Exception(L"Can't write table to file '" + fileName + L"'");
     stream.close();
 }
-

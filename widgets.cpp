@@ -235,9 +235,11 @@ Area::Area()
 
 Area::~Area()
 {
-    for (auto w : widgets)
+    for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++) {
+        Widget *w = *i;
         if (w && w->destroyByArea() && (! notManagedWidgets.count(w)))
             delete w;
+    }
 }
 
 void Area::add(Widget *widget, bool managed)
@@ -258,33 +260,33 @@ void Area::handleEvent(const SDL_Event &event)
 {
     switch (event.type) {
         case SDL_MOUSEBUTTONDOWN:
-            for (auto w : widgets)
-                if (w->onMouseButtonDown(event.button.button,
+            for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+                if ((*i)->onMouseButtonDown(event.button.button,
                             event.button.x, event.button.y))
                     return;
             break;
 
         case SDL_MOUSEBUTTONUP:
-            for (auto w : widgets)
-                if (w->onMouseButtonUp(event.button.button,
+            for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+                if ((*i)->onMouseButtonUp(event.button.button,
                             event.button.x, event.button.y))
                     return;
             break;
 
         case SDL_MOUSEMOTION:
-            for (auto w : widgets)
-                if (w->onMouseMove(event.motion.x, event.motion.y))
+            for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+                if ((*i)->onMouseMove(event.motion.x, event.motion.y))
                     return;
             break;
 
         // case SDL_VIDEOEXPOSE:
-        //     for (auto w : widgets)
-        //         w->draw();
+        //     for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+        //         (*i)->draw();
         //     break;
 
         case SDL_KEYDOWN:
-            for (auto w : widgets)
-                if (w->onKeyDown(event.key.keysym.sym, 0))
+            for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+                if ((*i)->onKeyDown(event.key.keysym.sym, 0))
                     return;
             break;
 
@@ -345,8 +347,8 @@ void Area::finishEventLoop()
 
 void Area::draw()
 {
-    for (auto w : widgets)
-        w->draw();
+    for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+        (*i)->draw();
 }
 
 
@@ -362,8 +364,8 @@ void Area::updateMouse()
     int x, y;
     SDL_GetMouseState(&x, &y);
 
-    for (auto w : widgets)
-        if (w->onMouseMove(x, y))
+    for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+        if ((*i)->onMouseMove(x, y))
                     return;
 }
 

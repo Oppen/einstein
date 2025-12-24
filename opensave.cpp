@@ -172,7 +172,8 @@ static void showListWindow(SavesList &list, Command **commands,
 
     int pos = 150;
     int no = 0;
-    for (auto &game : list) {
+    for (SavesList::iterator i = list.begin(); i != list.end(); i++) {
+        SavedGame &game = *i;
         area.add(new Button(260, pos, 280, 25, font, 255,255,255, L"blue.bmp",
                     game.getName(), commands[no++]));
         pos += 30;

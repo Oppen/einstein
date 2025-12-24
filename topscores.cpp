@@ -67,7 +67,8 @@ void TopScores::save()
     Storage *storage = getStorage();
     int no = 0;
 
-    for (auto &e : scores) {
+    for (ScoresList::iterator i = scores.begin(); i != scores.end(); i++) {
+        Entry &e = *i;
         storage->set(L"top_name_" + toString(no), e.name);
         storage->set(L"top_score_" + toString(no), e.score);
         no++;
@@ -113,7 +114,10 @@ ScoresWindow::ScoresWindow(int x, int y, TopScores *scores, int highlight):
     TopScores::ScoresList &list = scores->getScores();
     int no = 1;
     int pos = 70;
-    for (auto &e : list) {
+    for (TopScores::ScoresList::iterator i = list.begin();
+            i != list.end(); i++)
+    {
+        TopScores::Entry &e = *i;
         std::wstring s(toString(no) + L".");
         int w = entryFont.getWidth(s);
         int c = ((no - 1) == highlight) ? 0 : 255;
