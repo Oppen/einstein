@@ -141,7 +141,7 @@ Table& Table::operator = (const Table &table)
 
     fields.clear();
     lastArrayIndex = table.lastArrayIndex;
-    for (const auto f : table.fields)
+    for (const auto &f : table.fields)
         fields[f.first] = f.second->clone();
     
     return *this;
@@ -321,7 +321,7 @@ std::wstring Table::toString(bool printBraces, bool butify, int spaces) const
         res += butify ? L"{\n" : L"{";
     bool printNames = ! isArray();
 
-    for (const auto f : fields) {
+    for (const auto &f : fields) {
         const std::wstring &name = f.first;
         Value *value = f.second;
         if (butify)

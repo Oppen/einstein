@@ -17,9 +17,9 @@ class Font
         ~Font();
 
     public:
-        void draw(SDL_Surface *s, int x, int y, int r, int g, int b, 
+        void draw(SDL_Surface *s, int x, int y, Uint8 r, Uint8 g, Uint8 b, 
                 bool shadow, const std::wstring &text);
-        void draw(int x, int y, int r, int g, int b, bool shadow, 
+        void draw(int x, int y, Uint8 r, Uint8 g, Uint8 b, bool shadow, 
                 const std::wstring &text);
         int getWidth(const std::wstring &text);
         int getWidth(wchar_t ch);

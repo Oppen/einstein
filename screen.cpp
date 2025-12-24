@@ -1,12 +1,22 @@
 #include <SDL.h>
 #include "screen.h"
+#include "SDL_render.h"
 #include "exceptions.h"
 #include "unicode.h"
 
 
 Screen::Screen()
 {
-    screen = NULL;
+    SDL_CreateWindowAndRenderer(640, 480, SDL_WINDOW_FULLSCREEN_DESKTOP, &window, &renderer);
+    screen = SDL_CreateRGBSurface(0, 640, 480, 32,
+                                            0x00FF0000,
+                                            0x0000FF00,
+                                            0x000000FF,
+                                            0xFF000000);
+    texture = SDL_CreateTexture(renderer,
+                                                SDL_PIXELFORMAT_ARGB8888,
+                                                SDL_TEXTUREACCESS_STREAMING,
+                                                640, 480);
     mouseImage = NULL;
     mouseSave = NULL;
     mouseVisible = false;
@@ -35,10 +45,10 @@ void Screen::setMode(const VideoMode& mode)
 
     int flags = SDL_SWSURFACE /*| SDL_OPENGL*/;
     if (fullScreen)
-        flags = flags | SDL_FULLSCREEN;
-    screen = SDL_SetVideoMode(mode.getWidth(), mode.getHeight(), mode.getBpp(), flags);
+        flags = flags | SDL_WINDOW_FULLSCREEN;
+    SDL_RenderSetLogicalSize(renderer, mode.getWidth(), mode.getHeight());
     if (! screen)
-        throw Exception(L"Couldn't set video mode: " + 
+        throw Exception(L"Couldn't set video mode: " +
                 fromMbcs((SDL_GetError())));
 }
 
@@ -49,34 +59,35 @@ std::vector<VideoMode> Screen::getFullScreenModes() const
     return modes;
 }
 
-        
+
 int Screen::getWidth() const
 {
-    if (screen) 
+    if (screen)
         return screen->w;
-    else 
-        throw Exception(L"No video mode selected"); 
+    else
+        throw Exception(L"No video mode selected");
 }
 
 
 int Screen::getHeight() const
 {
-    if (screen) 
+    if (screen)
         return screen->h;
-    else 
+    else
         throw Exception(L"No video mode selected");
 }
 
 void Screen::centerMouse()
 {
-    if (screen) 
-        SDL_WarpMouse(screen->w / 2, screen->h / 2);
-    else 
+    if (screen)
+        SDL_WarpMouseGlobal(screen->w / 2, screen->h / 2);
+    else
         throw Exception(L"No video mode selected");
 }
 
 void Screen::setMouseImage(SDL_Surface *image)
 {
+	/*
     if (mouseImage) {
         SDL_FreeSurface(mouseImage);
         mouseImage = NULL;
@@ -87,12 +98,12 @@ void Screen::setMouseImage(SDL_Surface *image)
     }
 
     if (! image) return;
-    
+
     mouseImage = SDL_DisplayFormat(image);
-    if (! mouseImage) 
+    if (! mouseImage)
         throw Exception(L"Error creating surface");
     //mouseSave = SDL_DisplayFormat(image);
-    mouseSave = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCCOLORKEY,
+    mouseSave = SDL_CreateRGBSurface(0,
             image->w, image->h, screen->format->BitsPerPixel,
             screen->format->Rmask, screen->format->Gmask,
             screen->format->Bmask, screen->format->Amask);
@@ -100,16 +111,18 @@ void Screen::setMouseImage(SDL_Surface *image)
         SDL_FreeSurface(mouseImage);
         throw Exception(L"Error creating buffer surface");
     }
-    SDL_SetColorKey(mouseImage, SDL_SRCCOLORKEY, 
+    SDL_SetColorKey(mouseImage, SDL_TRUE,
             SDL_MapRGB(mouseImage->format, 0, 0, 0));
+	    */
 }
 
 
 void Screen::hideMouse()
 {
+    /*
     if (! mouseVisible)
         return;
-   
+
     if (! niceCursor) {
         mouseVisible = false;
         return;
@@ -124,18 +137,19 @@ void Screen::hideMouse()
         }
     }
     mouseVisible = false;
+    */
 }
 
 void Screen::showMouse()
 {
     if (mouseVisible)
         return;
-    
+
     if (! niceCursor) {
         mouseVisible = true;
         return;
     }
-    
+
     if (mouseImage && mouseSave) {
         int x, y;
         SDL_GetMouseState(&x, &y);
@@ -161,7 +175,7 @@ void Screen::updateMouse()
 void Screen::flush()
 {
     if (! regions.size()) return;
-    
+
     if (! regionsList) {
         regionsList = (SDL_Rect*)malloc(sizeof(SDL_Rect) * regions.size());
         if (! regionsList) {
@@ -171,7 +185,7 @@ void Screen::flush()
         maxRegionsList = regions.size();
     } else {
         if (maxRegionsList < (int)regions.size()) {
-            SDL_Rect *r = (SDL_Rect*)realloc(regionsList, 
+            SDL_Rect *r = (SDL_Rect*)realloc(regionsList,
                     sizeof(SDL_Rect) * regions.size());
             if (! r) {
                 regions.clear();
@@ -185,9 +199,10 @@ void Screen::flush()
 
     int j = 0;
     for (auto r : regions)
-        regionsList[j] = r;
+        regionsList[j++] = r;
 
-    SDL_UpdateRects(screen, regions.size(), regionsList);
+    SDL_RenderDrawRects(renderer, regionsList, regions.size());
+    SDL_RenderPresent(renderer);
     regions.clear();
 }
 
@@ -263,7 +278,7 @@ void Screen::setCursor(bool nice)
 {
     if (nice == niceCursor)
         return;
-    
+
     bool oldVisible = mouseVisible;
     if (mouseVisible)
         hideMouse();
@@ -273,7 +288,7 @@ void Screen::setCursor(bool nice)
         SDL_SetCursor(emptyCursor);
     else
         SDL_SetCursor(cursor);
-    
+
     if (oldVisible)
         showMouse();
 }
@@ -294,7 +309,7 @@ void Screen::doneCursors()
 
 SDL_Surface* Screen::createSubimage(int x, int y, int width, int height)
 {
-    SDL_Surface *s = SDL_CreateRGBSurface(SDL_HWSURFACE | SDL_SRCCOLORKEY,
+    SDL_Surface *s = SDL_CreateRGBSurface(0,
             width, height, screen->format->BitsPerPixel,
             screen->format->Rmask, screen->format->Gmask,
             screen->format->Bmask, screen->format->Amask);
@@ -305,4 +320,3 @@ SDL_Surface* Screen::createSubimage(int x, int y, int width, int height)
     SDL_BlitSurface(screen, &src, s, &dst);
     return s;
 }
-

@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////
 
 
-Button::Button(int x, int y, const std::wstring &name, Command *cmd, 
+Button::Button(int x, int y, const std::wstring &name, Command *cmd,
         bool transparent)
 {
     image = loadImage(name, transparent);
@@ -27,7 +27,7 @@ Button::Button(int x, int y, const std::wstring &name, Command *cmd,
 }
 
 
-Button::Button(int x, int y, int w, int h, Font *font, 
+Button::Button(int x, int y, int w, int h, Font *font,
         int fR, int fG, int fB, int hR, int hG, int hB,
         const std::wstring &text, Command *cmd)
 {
@@ -41,23 +41,23 @@ Button::Button(int x, int y, int w, int h, Font *font,
     SDL_Rect src = { x, y, width, height };
     SDL_Rect dst = { 0, 0, width, height };
     SDL_BlitSurface(screen.getSurface(), &src, s, &dst);
-    
+
     int tW, tH;
     font->getSize(text, tW, tH);
     font->draw(s, (width - tW) / 2, (height - tH) / 2, fR, fG, fB, true, text);
-    image = SDL_DisplayFormat(s);
+    // image = SDL_DisplayFormat(s);
     SDL_BlitSurface(screen.getSurface(), &src, s, &dst);
     font->draw(s, (width - tW) / 2, (height - tH) / 2, hR, hG, hB, true, text);
-    highlighted = SDL_DisplayFormat(s);
+    // highlighted = SDL_DisplayFormat(s);
     SDL_FreeSurface(s);
-    
+
     mouseInside = false;
     command = cmd;
 }
 
 
-Button::Button(int x, int y, int w, int h, Font *font, 
-        int r, int g, int b, const std::wstring &bg, 
+Button::Button(int x, int y, int w, int h, Font *font,
+        int r, int g, int b, const std::wstring &bg,
         const std::wstring &text, bool bevel, Command *cmd)
 {
     left = x;
@@ -66,7 +66,7 @@ Button::Button(int x, int y, int w, int h, Font *font,
     height = h;
 
     SDL_Surface *s = screen.getSurface();
-    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 
+    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
             s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
             s->format->Bmask, s->format->Amask);
 
@@ -87,23 +87,23 @@ Button::Button(int x, int y, int w, int h, Font *font,
         drawBevel(image, 1, 1, width - 2, height - 2, true, 1);
         SDL_UnlockSurface(image);
     }
-    
+
     int tW, tH;
     font->getSize(text, tW, tH);
     font->draw(image, (width - tW) / 2, (height - tH) / 2, r, g, b, true, text);
-    
+
     highlighted = adjustBrightness(image, 1.5, false);
-    SDL_SetColorKey(image, SDL_SRCCOLORKEY, getCornerPixel(image));
-    SDL_SetColorKey(highlighted, SDL_SRCCOLORKEY, getCornerPixel(highlighted));
-    
+    // SDL_SetColorKey(image, SDL_SRCCOLORKEY, getCornerPixel(image));
+    // SDL_SetColorKey(highlighted, SDL_SRCCOLORKEY, getCornerPixel(highlighted));
+
     mouseInside = false;
     command = cmd;
 }
 
 
 
-Button::Button(int x, int y, int w, int h, Font *font, 
-        int r, int g, int b, const std::wstring &bg, 
+Button::Button(int x, int y, int w, int h, Font *font,
+        int r, int g, int b, const std::wstring &bg,
         const std::wstring &text, Command *cmd)
 {
     left = x;
@@ -112,7 +112,7 @@ Button::Button(int x, int y, int w, int h, Font *font,
     height = h;
 
     SDL_Surface *s = screen.getSurface();
-    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 
+    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
             s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
             s->format->Bmask, s->format->Amask);
 
@@ -131,13 +131,13 @@ Button::Button(int x, int y, int w, int h, Font *font,
     drawBevel(image, 0, 0, width, height, false, 1);
     drawBevel(image, 1, 1, width - 2, height - 2, true, 1);
     SDL_UnlockSurface(image);
-    
+
     int tW, tH;
     font->getSize(text, tW, tH);
     font->draw(image, (width - tW) / 2, (height - tH) / 2, r, g, b, true, text);
-    
+
     highlighted = adjustBrightness(image, 1.5, false);
-    
+
     mouseInside = false;
     command = cmd;
 }
@@ -199,14 +199,14 @@ bool Button::onMouseMove(int x, int y)
 //////////////////////////////////////////////////////////////////
 
 
-KeyAccel::KeyAccel(SDLKey sym, Command *cmd)
+KeyAccel::KeyAccel(SDL_Keycode sym, Command *cmd)
 {
     command = cmd;
     key = sym;
 }
 
 
-bool KeyAccel::onKeyDown(SDLKey k, unsigned char ch)
+bool KeyAccel::onKeyDown(SDL_Keycode k, unsigned char ch)
 {
     if (key == k) {
         if (command)
@@ -255,36 +255,35 @@ void Area::handleEvent(const SDL_Event &event)
     switch (event.type) {
         case SDL_MOUSEBUTTONDOWN:
             for (auto w : widgets)
-                if (w->onMouseButtonDown(event.button.button, 
+                if (w->onMouseButtonDown(event.button.button,
                             event.button.x, event.button.y))
                     return;
             break;
-        
+
         case SDL_MOUSEBUTTONUP:
             for (auto w : widgets)
-                if (w->onMouseButtonUp(event.button.button, 
+                if (w->onMouseButtonUp(event.button.button,
                             event.button.x, event.button.y))
                     return;
             break;
-        
+
         case SDL_MOUSEMOTION:
             for (auto w : widgets)
                 if (w->onMouseMove(event.motion.x, event.motion.y))
                     return;
             break;
-        
-        case SDL_VIDEOEXPOSE:
-            for (auto w : widgets)
-                w->draw();
-            break;
-        
+
+        // case SDL_VIDEOEXPOSE:
+        //     for (auto w : widgets)
+        //         w->draw();
+        //     break;
+
         case SDL_KEYDOWN:
             for (auto w : widgets)
-                if (w->onKeyDown(event.key.keysym.sym, 
-                            (unsigned char)event.key.keysym.unicode))
+                if (w->onKeyDown(event.key.keysym.sym, 0))
                     return;
             break;
-        
+
         case SDL_QUIT:
             exit(0);
     }
@@ -294,11 +293,11 @@ void Area::run()
 {
     terminate = false;
     SDL_Event event;
-    
+
     Uint32 lastTimer = 0;
     draw();
     screen.showMouse();
-    
+
     bool runTimer = timer ? true : false;
     bool dispetchEvent;
     while (! terminate) {
@@ -358,7 +357,7 @@ void Area::updateMouse()
 {
     int x, y;
     SDL_GetMouseState(&x, &y);
-    
+
     for (auto w : widgets)
         if (w->onMouseMove(x, y))
                     return;
@@ -388,11 +387,11 @@ AnyKeyAccel::~AnyKeyAccel()
 {
 }
 
-bool AnyKeyAccel::onKeyDown(SDLKey key, unsigned char ch)
+bool AnyKeyAccel::onKeyDown(SDL_Keycode key, unsigned char ch)
 {
-    if (((key >= SDLK_NUMLOCK) && (key <= SDLK_COMPOSE)) || 
-            (key == SDLK_TAB) || (key == SDLK_UNKNOWN))
-        return false;
+    // if (((key >= SDLK_NUMLOCK) && (key <= SDLK_COMPOSE)) ||
+    //         (key == SDLK_TAB) || (key == SDLK_UNKNOWN))
+    //     return false;
 
     if (command)
         command->doAction();
@@ -420,16 +419,16 @@ bool AnyKeyAccel::onMouseButtonDown(int button, int x, int y)
 
 
 
-Window::Window(int x, int y, int w, int h, const std::wstring &bg, 
+Window::Window(int x, int y, int w, int h, const std::wstring &bg,
                 bool frameWidth, bool raised)
 {
     left = x;
     top = y;
     width = w;
     height = h;
-    
+
     SDL_Surface *s = screen.getSurface();
-    SDL_Surface *win = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 
+    SDL_Surface *win = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
             s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
             s->format->Bmask, s->format->Amask);
 
@@ -466,8 +465,8 @@ Window::Window(int x, int y, int w, int h, const std::wstring &bg,
         f += 0.1;
     }
     SDL_UnlockSurface(win);
-    
-    background = SDL_DisplayFormat(win);
+
+    // background = SDL_DisplayFormat(win);
     SDL_FreeSurface(win);
 }
 
@@ -509,8 +508,8 @@ Label::Label(Font *f, int x, int y, int r, int g, int b, std::wstring s,
 }
 
 
-Label::Label(Font *f, int x, int y, int w, int h, HorAlign hA, VerAlign vA, 
-        int r, int g, int b, const std::wstring &s): 
+Label::Label(Font *f, int x, int y, int w, int h, HorAlign hA, VerAlign vA,
+        int r, int g, int b, const std::wstring &s):
                 text(s)
 {
     font = f;
@@ -537,13 +536,13 @@ void Label::draw()
         case ALIGN_CENTER: x = left + (width - w) / 2; break;
         default: x = left;
     }
-    
+
     switch (vAlign) {
         case ALIGN_BOTTOM: y = top + height - h; break;
         case ALIGN_MIDDLE: y = top + (height - h) / 2; break;
         default: y = top;
     }
-    
+
     font->draw(x, y, red,green,blue, shadow, text);
     screen.addRegionToUpdate(x, y, w, h);
 }
@@ -557,8 +556,8 @@ void Label::draw()
 //////////////////////////////////////////////////////////////////
 
 
-InputField::InputField(int x, int y, int w, int h, const std::wstring &background, 
-        std::wstring &s, int maxLen, int r, int g, int b, Font *f): 
+InputField::InputField(int x, int y, int w, int h, const std::wstring &background,
+        std::wstring &s, int maxLen, int r, int g, int b, Font *f):
                 Window(x, y, w, h, background, 1, false), text(s)
 {
     maxLength = maxLen;
@@ -567,13 +566,12 @@ InputField::InputField(int x, int y, int w, int h, const std::wstring &backgroun
     blue = b;
     font = f;
     moveCursor(text.length());
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-    SDL_EnableUNICODE(1);
+    // SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 }
 
 InputField::~InputField()
 {
-    SDL_EnableKeyRepeat(0, 0);
+    // SDL_EnableKeyRepeat(0, 0);
 }
 
 void InputField::draw()
@@ -582,7 +580,7 @@ void InputField::draw()
 
     SDL_Rect rect = { left+1, top+1, width-2, height-2 };
     SDL_SetClipRect(screen.getSurface(), &rect);
-    
+
     font->draw(left+1, top+1, red,green,blue, true, text);
 
     if (cursorVisible) {
@@ -594,7 +592,7 @@ void InputField::draw()
             screen.setPixel(left + pos + 1, top + i, red, green, blue);
         }
     }
-    
+
     SDL_SetClipRect(screen.getSurface(), NULL);
 }
 
@@ -616,7 +614,7 @@ void InputField::onTimer()
 }
 
 
-bool InputField::onKeyDown(SDLKey key, unsigned char translatedChar)
+bool InputField::onKeyDown(SDL_Keycode key, unsigned char translatedChar)
 {
     switch (key) {
         case SDLK_BACKSPACE:
@@ -663,13 +661,13 @@ bool InputField::onKeyDown(SDLKey key, unsigned char translatedChar)
 
         default: ;
     }
-    
+
     if (translatedChar > 31)
         onCharTyped(translatedChar);
     return false;
 }
 
-bool InputField::onKeyUp(SDLKey key)
+bool InputField::onKeyUp(SDL_Keycode key)
 {
     return false;
 }
@@ -686,7 +684,7 @@ void InputField::onCharTyped(unsigned char ch)
         moveCursor(cursorPos);
     draw();
 }
-        
+
 void InputField::moveCursor(int pos)
 {
     lastCursor = SDL_GetTicks();
@@ -703,8 +701,8 @@ void InputField::moveCursor(int pos)
 
 
 
-Checkbox::Checkbox(int x, int y, int w, int h, Font *font, 
-        int r, int g, int b, const std::wstring &bg, 
+Checkbox::Checkbox(int x, int y, int w, int h, Font *font,
+        int r, int g, int b, const std::wstring &bg,
         bool &chk): checked(chk)
 {
     left = x;
@@ -714,7 +712,7 @@ Checkbox::Checkbox(int x, int y, int w, int h, Font *font,
     checked = chk;
 
     SDL_Surface *s = screen.getSurface();
-    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 
+    image = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
             s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
             s->format->Bmask, s->format->Amask);
 
@@ -733,18 +731,18 @@ Checkbox::Checkbox(int x, int y, int w, int h, Font *font,
     drawBevel(image, 0, 0, width, height, false, 1);
     drawBevel(image, 1, 1, width - 2, height - 2, true, 1);
     SDL_UnlockSurface(image);
-    
+
     highlighted = adjustBrightness(image, 1.5, false);
-    
-    checkedImage = SDL_DisplayFormat(image);
+
+    // checkedImage = SDL_DisplayFormat(image);
     int tW, tH;
     font->getSize(L"X", tW, tH);
     tH += 2;
     tW += 2;
-    font->draw(checkedImage, (width - tW) / 2, (height - tH) / 2, r, g, b, 
+    font->draw(checkedImage, (width - tW) / 2, (height - tH) / 2, r, g, b,
             true, L"X");
     checkedHighlighted = adjustBrightness(checkedImage, 1.5, false);
-    
+
     mouseInside = false;
 }
 
@@ -833,10 +831,10 @@ Picture::Picture(int x, int y, SDL_Surface *img)
     managed = false;
 }
 
-Picture::~Picture() 
-{ 
+Picture::~Picture()
+{
     if (managed)
-        SDL_FreeSurface(image); 
+        SDL_FreeSurface(image);
 }
 
 void Picture::draw()
@@ -845,9 +843,9 @@ void Picture::draw()
     screen.addRegionToUpdate(left, top, width, height);
 }
 
-void Picture::moveX(const int newX) 
-{ 
-    left = newX; 
+void Picture::moveX(const int newX)
+{
+    left = newX;
 }
 
 void Picture::getBounds(int &l, int &t, int &w, int &h)
@@ -910,7 +908,7 @@ void Slider::createBackground()
 void Slider::createSlider(int size)
 {
     SDL_Surface *s = screen.getSurface();
-    SDL_Surface *image = SDL_CreateRGBSurface(SDL_SWSURFACE, size, size, 
+    SDL_Surface *image = SDL_CreateRGBSurface(SDL_SWSURFACE, size, size,
             s->format->BitsPerPixel, s->format->Rmask, s->format->Gmask,
             s->format->Bmask, s->format->Amask);
 
@@ -929,10 +927,10 @@ void Slider::createSlider(int size)
     drawBevel(image, 0, 0, size, size, false, 1);
     drawBevel(image, 1, 1, size - 2, size - 2, true, 1);
     SDL_UnlockSurface(image);
-    
+
     activeSlider = adjustBrightness(image, 1.5, false);
-    slider = SDL_DisplayFormat(image);
-    
+    // slider = SDL_DisplayFormat(image);
+
     SDL_FreeSurface(image);
 }
 
@@ -961,7 +959,7 @@ bool Slider::onMouseButtonUp(int button, int x, int y)
 }
 
 
-int Slider::valueToX(float value) 
+int Slider::valueToX(float value)
 {
     if (value < 0)
         value = 0.0f;
@@ -971,7 +969,7 @@ int Slider::valueToX(float value)
 }
 
 
-float Slider::xToValue(int pos) 
+float Slider::xToValue(int pos)
 {
     if (0 > pos)
         pos = 0;
@@ -992,7 +990,7 @@ bool Slider::onMouseMove(int x, int y)
         }
         return true;
     }
-    
+
     bool in = isInRect(x, y, left, top, width, height);
     if (in) {
         int sliderX = valueToX(value);
@@ -1008,4 +1006,3 @@ bool Slider::onMouseMove(int x, int y)
         }
     return in;
 }
-

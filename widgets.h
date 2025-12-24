@@ -33,7 +33,7 @@ class Widget
         virtual bool onMouseMove(int x, int y) { return false; };
         virtual void draw() { };
         virtual void setParent(Area *a) { area = a; };
-        virtual bool onKeyDown(SDLKey key, unsigned char ch) { return false; };
+        virtual bool onKeyDown(SDL_Keycode key, unsigned char ch) { return false; };
         virtual bool destroyByArea() { return true; };
 };
 
@@ -77,12 +77,12 @@ class Button: public Widget
 class KeyAccel: public Widget
 {
     protected:
-        SDLKey key;
+        SDL_Keycode key;
         Command *command;
 
     public:
-        KeyAccel(SDLKey key, Command *command);
-        virtual bool onKeyDown(SDLKey key, unsigned char ch);
+        KeyAccel(SDL_Keycode key, Command *command);
+        virtual bool onKeyDown(SDL_Keycode key, unsigned char ch);
 };
 
 
@@ -146,7 +146,7 @@ class AnyKeyAccel: public Widget
         virtual ~AnyKeyAccel();
 
     public:
-        virtual bool onKeyDown(SDLKey key, unsigned char ch);
+        virtual bool onKeyDown(SDL_Keycode key, unsigned char ch);
         virtual bool onMouseButtonDown(int button, int x, int y);
 };
 
@@ -225,8 +225,8 @@ class InputField: public Window, public TimerHandler
         virtual void draw();
         virtual void setParent(Area *a);
         virtual void onTimer();
-        virtual bool onKeyDown(SDLKey key, unsigned char ch);
-        virtual bool onKeyUp(SDLKey key);
+        virtual bool onKeyDown(SDL_Keycode key, unsigned char ch);
+        virtual bool onKeyUp(SDL_Keycode key);
         virtual void onCharTyped(unsigned char ch);
 
     private:

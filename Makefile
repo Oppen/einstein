@@ -1,5 +1,5 @@
 ########################################
-# 
+#
 # build parameters
 #
 ########################################
@@ -16,8 +16,8 @@ PREFIX=/usr/local
 OPTIMIZE=#-O6 -march=pentium4 -mfpmath=sse -fomit-frame-pointer -funroll-loops
 PROFILER=#-pg
 DEBUG=#-ggdb
-CXXFLAGS=-pipe -Wall $(OPTIMIZE) $(DEBUG) `sdl-config --cflags` -DPREFIX=L\"$(PREFIX)\" $(PROFILER)
-LNFLAGS=-pipe -lSDL_ttf -lfreetype `sdl-config --libs` -lz -lSDL_mixer $(PROFILER)
+CXXFLAGS+=-pipe -Wall $(OPTIMIZE) $(DEBUG) `sdl2-config --cflags` -DPREFIX=L\"$(PREFIX)\" $(PROFILER)
+LNFLAGS=-pipe -lSDL2_ttf -lfreetype `sdl2-config --libs` -lz -lSDL2_mixer $(PROFILER)
 INSTALL=install
 
 TARGET=einstein
@@ -63,6 +63,5 @@ run: $(TARGET)
 install: $(TARGET)
 	$(INSTALL) -s -D $(TARGET) $(PREFIX)/bin/$(TARGET)
 	$(INSTALL) -D einstein.res $(PREFIX)/share/einstein/res/einstein.res
-	
-# DO NOT DELETE THIS LINE -- make depend depends on it.
 
+# DO NOT DELETE THIS LINE -- make depend depends on it.

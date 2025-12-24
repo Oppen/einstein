@@ -56,7 +56,7 @@ Font::~Font()
 }
 
 
-void Font::draw(SDL_Surface *s, int x, int y, int r, int g, int b, 
+void Font::draw(SDL_Surface *s, int x, int y, Uint8 r, Uint8 g, Uint8 b, 
         bool shadow, const std::wstring &text)
 {
     if (text.length() < 1)
@@ -80,7 +80,7 @@ void Font::draw(SDL_Surface *s, int x, int y, int r, int g, int b,
     SDL_FreeSurface(surface);
 }
 
-void Font::draw(int x, int y, int r, int g, int b, bool shadow, 
+void Font::draw(int x, int y, Uint8 r, Uint8 g, Uint8 b, bool shadow, 
         const std::wstring &text)
 {
     draw(screen.getSurface(), x, y, r,g,b, shadow, text);

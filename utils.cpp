@@ -57,13 +57,14 @@ SDL_Surface* loadImage(const std::wstring &name, bool transparent)
     resources->delRef(bmp);
     if (! s)
         throw Exception(L"Error loading " + name);
-    SDL_Surface *screenS = SDL_DisplayFormat(s);
+    // SDL_Surface *screenS = SDL_DisplayFormat(s);
     SDL_FreeSurface(s);
-    if (! screenS)
-        throw Exception(L"Error translating to screen format " + name);
-    if (transparent)
-        SDL_SetColorKey(screenS, SDL_SRCCOLORKEY, getCornerPixel(screenS));
-    return screenS;
+    // if (! screenS)
+    //     throw Exception(L"Error translating to screen format " + name);
+    // if (transparent)
+    //     SDL_SetColorKey(screenS, SDL_SRCCOLORKEY, getCornerPixel(screenS));
+    // return screenS;
+    return NULL;
 }
 
 
@@ -71,7 +72,7 @@ SDL_Surface* loadImage(const std::wstring &name, bool transparent)
 #include <sys/timeb.h>
 struct timezone { };
 
-int gettimeofday(struct timeval* tp, int* /*tz*/) 
+int gettimeofday(struct timeval* tp, int* /*tz*/)
 {
     struct timeb tb;
     ftime(&tb);
@@ -80,7 +81,7 @@ int gettimeofday(struct timeval* tp, int* /*tz*/)
     return 0;
 }
 
-int gettimeofday(struct timeval* tp, struct timezone* /*tz*/) 
+int gettimeofday(struct timeval* tp, struct timezone* /*tz*/)
 {
     return gettimeofday(tp, (int*)NULL);
 }
@@ -145,7 +146,7 @@ void setPixel(SDL_Surface *s, int x, int y, int r, int g, int b)
 }
 
 
-void getPixel(SDL_Surface *surface, int x, int y, 
+void getPixel(SDL_Surface *surface, int x, int y,
         Uint8 *r, Uint8 *g, Uint8 *b)
 {
     int bpp = surface->format->BytesPerPixel;
@@ -183,7 +184,7 @@ void adjustBrightness(SDL_Surface *image, int x, int y, double k)
         }
         lastGamma = k;
     }
-    
+
     Uint8 r, g, b;
     getPixel(image, x, y, &r, &g, &b);
     setPixel(image, x, y, gammaTable[r], gammaTable[g], gammaTable[b]);
@@ -200,24 +201,24 @@ SDL_Surface* adjustBrightness(SDL_Surface *image, double k, bool transparent)
         }
         lastGamma = k;
     }
-    
-    SDL_Surface *s = SDL_DisplayFormat(image);
+
+    SDL_Surface *s = NULL; //SDL_DisplayFormat(image);
     if (! s)
         throw Exception(L"Error converting image to display format");
-    
+
     SDL_LockSurface(s);
-    
+
     Uint8 r, g, b;
     for (int j = 0; j < s->h; j++)
         for (int i = 0; i < s->w; i++) {
             getPixel(s, i, j, &r, &g, &b);
             setPixel(s, i, j, gammaTable[r], gammaTable[g], gammaTable[b]);
         }
-    
+
     SDL_UnlockSurface(s);
 
-    if (transparent)
-        SDL_SetColorKey(s, SDL_SRCCOLORKEY, getCornerPixel(s));
+    // if (transparent)
+    //     SDL_SetColorKey(s, SDL_SRCCOLORKEY, getCornerPixel(s));
 
     return s;
 }
@@ -228,7 +229,7 @@ class CenteredBitmap: public Widget
     private:
         SDL_Surface *tile;
         int x, y;
-        
+
     public:
         CenteredBitmap(const std::wstring &fileName) {
             tile = loadImage(fileName);
@@ -282,7 +283,7 @@ std::wstring secToStr(int time)
 }
 
 
-void showMessageWindow(Area *parentArea, const std::wstring &pattern, 
+void showMessageWindow(Area *parentArea, const std::wstring &pattern,
         int width, int height, Font *font, int r, int g, int b,
         const std::wstring &msg)
 {
@@ -290,7 +291,7 @@ void showMessageWindow(Area *parentArea, const std::wstring &pattern,
 
     int x = (screen.getWidth() - width) / 2;
     int y = (screen.getHeight() - height) / 2;
-    
+
     area.add(parentArea);
     area.add(new Window(x, y, width, height, pattern, 6));
     area.add(new Label(font, x, y, width, height, Label::ALIGN_CENTER,
@@ -366,7 +367,7 @@ int readInt(std::istream &stream)
     stream.read((char*)buf, 4);
     if (stream.fail())
         throw Exception(L"Error reading string");
-    return buf[0] + buf[1] * 256 + buf[2] * 256 * 256 + 
+    return buf[0] + buf[1] * 256 + buf[2] * 256 * 256 +
         buf[3] * 256 * 256 * 256;
 }
 
@@ -378,7 +379,7 @@ std::wstring readString(std::istream &stream)
 
     if (stream.fail())
         throw Exception(L"Error reading string");
-    
+
     c = stream.get();
     while (c && (! stream.fail())) {
         str += c;
@@ -401,7 +402,7 @@ void writeInt(std::ostream &stream, int v)
         v = v >> 8;
         b[i] = ib;
     }
-    
+
     stream.write((char*)&b, 4);
 }
 
@@ -413,7 +414,6 @@ void writeString(std::ostream &stream, const std::wstring &value)
 
 int readInt(unsigned char *buf)
 {
-    return buf[0] + buf[1] * 256 + buf[2] * 256 * 256 + 
+    return buf[0] + buf[1] * 256 + buf[2] * 256 * 256 +
         buf[3] * 256 * 256 * 256;
 }
-

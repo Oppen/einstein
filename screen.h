@@ -3,6 +3,9 @@
 
 
 #include "SDL.h"
+#include "SDL_render.h"
+#include "SDL_video.h"
+#include <cassert>
 #include <vector>
 #include <list>
 
@@ -10,17 +13,16 @@
 class VideoMode
 {
     private:
-        int width;
-        int height;
+        static const int width = 640;
+        static const int height = 480;
         int bpp;
         bool fullScreen;
 
     public:
-        VideoMode(int w, int h, int bpp, bool fullscreen) 
-        { 
-            width = w; 
-            height = h; 
-            this->bpp = bpp; 
+        VideoMode(int w, int h, int bpp, bool fullscreen)
+        {
+            assert(w == width && h == height);
+            this->bpp = bpp;
             this->fullScreen = fullscreen;
         }
 
@@ -36,6 +38,9 @@ class Screen
 {
     private:
         SDL_Surface *screen;
+        SDL_Texture *texture;
+        SDL_Renderer *renderer;
+        SDL_Window *window;
         bool fullScreen;
         SDL_Surface *mouseImage;
         SDL_Surface *mouseSave;
@@ -46,7 +51,7 @@ class Screen
         int saveX, saveY;
         bool niceCursor;
         SDL_Cursor *cursor, *emptyCursor;
-    
+
     public:
         Screen();
         ~Screen();
@@ -75,4 +80,3 @@ class Screen
 
 
 #endif
-
