@@ -1,6 +1,6 @@
 OPTIMIZE=-O6
 CFLAGS=-Wall $(OPTIMIZE)
-LNFLAGS=-lz
+LIBS=-lz
 
 TARGET=mkres
 SOURCES=main.cpp compressor.cpp unicode.cpp streams.cpp table.cpp \

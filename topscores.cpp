@@ -103,9 +103,9 @@ class ScoresWindow: public Window
 ScoresWindow::ScoresWindow(int x, int y, TopScores *scores, int highlight): 
                 Window(x, y, 320, 350, L"blue.bmp")
 {
-    Font titleFont(L"nova.ttf", 26);
-    Font entryFont(L"laudcn2.ttf", 14);
-    Font timeFont(L"luximb.ttf", 14);
+    Font titleFont(L"DejaVuSans.ttf", 26);
+    Font entryFont(L"DejaVuSans.ttf", 14);
+    Font timeFont(L"DejaVuSans.ttf", 14);
     
     std::wstring txt = msg(L"topScores");
     int w = titleFont.getWidth(txt);
@@ -139,7 +139,7 @@ void showScoresWindow(Area *parentArea, TopScores *scores, int highlight)
 {
     Area area;
 
-    Font font(L"laudcn2.ttf", 16);
+    Font font(L"DejaVuSans.ttf", 16);
     area.add(parentArea);
     area.add(new ScoresWindow(240, 125, scores, highlight));
     ExitCommand exitCmd(area);
@@ -154,7 +154,7 @@ std::wstring enterNameDialog(Area *parentArea)
 {
     Area area;
     
-    Font font(L"laudcn2.ttf", 16);
+    Font font(L"DejaVuSans.ttf", 16);
     area.add(parentArea);
     area.add(new Window(170, 280, 460, 100, L"blue.bmp"));
     Storage *storage = getStorage();

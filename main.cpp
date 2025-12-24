@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <iostream>
-#include <SDL.h>
-#include <SDL_main.h>
-#include <SDL_ttf.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_main.h>
+#include <SDL/SDL_ttf.h>
 #include "main.h"
 #include "utils.h"
 #include "storage.h"
@@ -31,6 +31,12 @@ static void initScreen()
     SDL_SetColorKey(mouse, SDL_SRCCOLORKEY, SDL_MapRGB(mouse->format, 0, 0, 0));
     screen.setMouseImage(mouse);
     SDL_FreeSurface(mouse);
+    
+    SDL_Surface *icon = loadImage(L"icon.bmp");
+    SDL_SetColorKey(icon, SDL_SRCCOLORKEY, SDL_MapRGB(icon->format, 0, 0, 0));
+    SDL_WM_SetIcon(icon, NULL);
+    SDL_FreeSurface(icon);
+    
     SDL_WM_SetCaption("Einstein", NULL);
 
 #ifdef __APPLE__
@@ -64,7 +70,7 @@ static void loadResources(const std::wstring &selfPath)
 #ifdef __APPLE__
     dirs.push_back(getResourcesPath(selfPath));
 #else
-    dirs.push_back(PREFIX L"/share/einstein/res");
+    dirs.push_back("/usr" L"/share/einstein/res");
     dirs.push_back(fromMbcs(getenv("HOME")) + L"/.einstein/res");
 #endif
 #endif
@@ -78,7 +84,7 @@ static void loadResources(const std::wstring &selfPath)
 /*static void checkBetaExpire()
 {
     if (1124832535L + 60L*60L*24L*40L < time(NULL)) {
-        Font font(L"laudcn2.ttf", 16);
+        Font font(L"DejaVuSans.ttf", 16);
         Area area;
         showMessageWindow(&area, L"darkpattern.bmp", 
                 700, 100, &font, 255,255,255, 

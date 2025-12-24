@@ -11,6 +11,7 @@
 #include "convert.h"
 #include "utils.h"
 #include "tokenizer.h"
+#include "storage.h"
 
 
 #define WIDTH		600
@@ -139,9 +140,9 @@ Description::Description(Area *parentArea)
 {
     currentPage = 0;
     //area.add(parentArea, false);
-    titleFont = new Font(L"nova.ttf", 26);
-    buttonFont = new Font(L"laudcn2.ttf", 14);
-    textFont = new Font(L"laudcn2.ttf", 16);
+    titleFont = new Font(L"DejaVuSans.ttf", 26);
+    buttonFont = new Font(L"DejaVuSans.ttf", 14);
+    textFont = new Font(L"DejaVuSans.ttf", 16);
     textHeight = (int)(textFont->getHeight(L"A") * 1.0);
     text = new TextParser(msg(L"rulesText"), *textFont, START_X, START_Y, 
                 CLIENT_WIDTH, CLIENT_HEIGHT);
@@ -259,7 +260,10 @@ void TextParser::addLine(TextPage *page, std::wstring &line, int &curPosY,
 {
     if (0 < line.length()) {
         page->add(new Label(&font, offsetX, offsetY + curPosY,
-                    255,255,255, line, false));
+                    getStorage()->get(L"text_red", 0),
+                    getStorage()->get(L"text_green", 0),
+                    getStorage()->get(L"text_blue", 100),
+                    line, false));
         line.clear();
         curPosY += 10 + charHeight;
         lineWidth = 0;

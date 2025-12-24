@@ -53,8 +53,8 @@ class OptionsChangedCommand: public Command
 
 void showOptionsWindow(Area *parentArea)
 {
-    Font titleFont(L"nova.ttf", 26);
-    Font font(L"laudcn2.ttf", 14);
+    Font titleFont(L"DejaVuSans.ttf", 26);
+    Font font(L"DejaVuSans.ttf", 14);
 
     bool fullscreen = (getStorage()->get(L"fullscreen", 1) != 0);
     bool niceCursor = (getStorage()->get(L"niceCursor", 1) != 0);

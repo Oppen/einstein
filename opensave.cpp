@@ -160,7 +160,7 @@ typedef std::list<SavedGame> SavesList;
 static void showListWindow(SavesList &list, Command **commands,
         const std::wstring &title, Area &area, Font *font)
 {
-    Font titleFont(L"nova.ttf", 26);
+    Font titleFont(L"DejaVuSans.ttf", 26);
 
     area.add(new Window(250, 90, 300, 420, L"blue.bmp"));
     area.add(new Label(&titleFont, 250, 95, 300, 40, Label::ALIGN_CENTER,
@@ -189,7 +189,7 @@ bool saveGame(Area *parentArea, Game *game)
     
     Area area;
     area.add(parentArea, false);
-    Font font(L"laudcn2.ttf", 14);
+    Font font(L"DejaVuSans.ttf", 14);
     bool saved = false;
     
     SavesList list;
@@ -258,7 +258,7 @@ Game* loadGame(Area *parentArea)
     
     Area area;
     area.add(parentArea, false);
-    Font font(L"laudcn2.ttf", 14);
+    Font font(L"DejaVuSans.ttf", 14);
     
     Game *newGame = NULL;
     

@@ -23,11 +23,11 @@ void MenuBackground::draw()
     SDL_Surface *title = loadImage(L"nova.bmp");
     screen.draw(0, 0, title);
     SDL_FreeSurface(title);
-    Font font(L"nova.ttf", 28);
+    Font font(L"DejaVuSans.ttf", 28);
     std::wstring s(msg(L"einsteinFlowix"));
     int width = font.getWidth(s);
     font.draw((screen.getWidth() - width) / 2, 30, 255,255,255, true, s);
-    Font urlFont(L"luximb.ttf", 16);
+    Font urlFont(L"DejaVuSans.ttf", 16);
     s = L"http://games.flowix.com";
     width = urlFont.getWidth(s);
     urlFont.draw((screen.getWidth() - width) / 2, 60, 255,255,0, true, s);
@@ -133,9 +133,9 @@ class AboutCommand: public Command
 
         virtual void doAction() {
             Area area;
-            Font titleFont(L"nova.ttf", 26);
-            Font font(L"laudcn2.ttf", 14);
-            Font urlFont(L"luximb.ttf", 16);
+            Font titleFont(L"DejaVuSans.ttf", 26);
+            Font font(L"DejaVuSans.ttf", 14);
+            Font urlFont(L"DejaVuSans.ttf", 16);
 
 #define LABEL(pos, c, f, text) area.add(new Label(&f, 220, pos, 360, 20, \
             Label::ALIGN_CENTER, Label::ALIGN_MIDDLE, 255,255,c, text));
@@ -171,7 +171,7 @@ static Button* menuButton(int y, Font *font, const std::wstring &text,
 void menu()
 {
     Area area;
-    Font font(L"laudcn2.ttf", 20);
+    Font font(L"DejaVuSans.ttf", 20);
 
     area.add(new MenuBackground());
     area.draw();
