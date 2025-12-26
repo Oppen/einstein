@@ -56,7 +56,6 @@ void Screen::centerMouse()
 
 void Screen::setMouseImage(SDL_Surface *image)
 {
-	/*
     if (mouseImage) {
         SDL_FreeSurface(mouseImage);
         mouseImage = NULL;
@@ -68,7 +67,7 @@ void Screen::setMouseImage(SDL_Surface *image)
 
     if (! image) return;
 
-    mouseImage = SDL_DisplayFormat(image);
+    mouseImage = SDL_ConvertSurface(image, screen->format, 0);
     if (! mouseImage)
         throw Exception(L"Error creating surface");
     //mouseSave = SDL_DisplayFormat(image);
@@ -82,13 +81,11 @@ void Screen::setMouseImage(SDL_Surface *image)
     }
     SDL_SetColorKey(mouseImage, SDL_TRUE,
             SDL_MapRGB(mouseImage->format, 0, 0, 0));
-	    */
 }
 
 
 void Screen::hideMouse()
 {
-    /*
     if (! mouseVisible)
         return;
 
@@ -102,11 +99,10 @@ void Screen::hideMouse()
         SDL_Rect dst = { saveX, saveY, mouseSave->w, mouseSave->h };
         if (src.w > 0) {
             SDL_BlitSurface(mouseSave, &src, screen, &dst);
-            addRegionToUpdate(dst.x, dst.y, dst.w, dst.h);
+            // addRegionToUpdate(dst.x, dst.y, dst.w, dst.h);
         }
     }
     mouseVisible = false;
-    */
 }
 
 void Screen::showMouse()

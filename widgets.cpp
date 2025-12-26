@@ -37,23 +37,21 @@ Button::Button(int x, int y, int w, int h, Font *font,
     width = w;
     height = h;
 
+    SDL_Surface *screenS = screen.getSurface();
     SDL_Surface *s = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-            24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0/*0xFF000000*/);
+            screenS->format->BitsPerPixel, screenS->format->Rmask, screenS->format->Gmask,
+            screenS->format->Bmask, screenS->format->Amask);
     SDL_Rect src = { x, y, width, height };
     SDL_Rect dst = { 0, 0, width, height };
-    SDL_BlitSurface(screen.getSurface(), &src, s, &dst);
+    SDL_BlitSurface(screenS, &src, s, &dst);
 
     int tW, tH;
     font->getSize(text, tW, tH);
     font->draw(s, (width - tW) / 2, (height - tH) / 2, fR, fG, fB, true, text);
-    image =
-        SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-                    24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0/*0xFF000000*/);
-    SDL_BlitSurface(screen.getSurface(), &src, s, &dst);
+    image = SDL_ConvertSurface(s, screenS->format, 0);
+    SDL_BlitSurface(screenS, &src, s, &dst);
     font->draw(s, (width - tW) / 2, (height - tH) / 2, hR, hG, hB, true, text);
-    highlighted =
-        SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-                    24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0/*0xFF000000*/);
+    highlighted = SDL_ConvertSurface(s, screenS->format, 0);
     SDL_FreeSurface(s);
 
     mouseInside = false;
@@ -98,8 +96,8 @@ Button::Button(int x, int y, int w, int h, Font *font,
     font->draw(image, (width - tW) / 2, (height - tH) / 2, r, g, b, true, text);
 
     highlighted = adjustBrightness(image, 1.5, false);
-    // SDL_SetColorKey(image, SDL_SRCCOLORKEY, getCornerPixel(image));
-    // SDL_SetColorKey(highlighted, SDL_SRCCOLORKEY, getCornerPixel(highlighted));
+    SDL_SetColorKey(image, SDL_TRUE, getCornerPixel(image));
+    SDL_SetColorKey(highlighted, SDL_TRUE, getCornerPixel(highlighted));
 
     mouseInside = false;
     command = cmd;
@@ -151,7 +149,7 @@ Button::Button(int x, int y, int w, int h, Font *font,
 Button::~Button()
 {
     SDL_FreeSurface(image);
-    // SDL_FreeSurface(highlighted);
+    SDL_FreeSurface(highlighted);
 }
 
 
@@ -279,10 +277,12 @@ void Area::handleEvent(const SDL_Event &event)
                     return;
             break;
 
-        // case SDL_VIDEOEXPOSE:
-        //     for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
-        //         (*i)->draw();
-        //     break;
+        case SDL_WINDOWEVENT:
+        case SDL_DISPLAYEVENT:
+        case SDL_RENDER_TARGETS_RESET:
+            for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
+                (*i)->draw();
+            break;
 
         case SDL_KEYDOWN:
             for (WidgetsList::iterator i = widgets.begin(); i != widgets.end(); i++)
@@ -305,9 +305,9 @@ void Area::run()
     screen.showMouse();
 
     bool runTimer = timer ? true : false;
-    bool dispetchEvent;
+    bool dispatchEvent;
     while (! terminate) {
-        dispetchEvent = true;
+        dispatchEvent = true;
         if (! timer) {
             SDL_WaitEvent(&event);
         } else {
@@ -321,7 +321,7 @@ void Area::run()
                     SDL_Delay(20);
                     continue;
                 } else
-                    dispetchEvent = false;
+                    dispatchEvent = false;
             }
         }
         screen.hideMouse();
@@ -330,7 +330,7 @@ void Area::run()
                 timer->onTimer();
             runTimer = false;
         }
-        if (dispetchEvent)
+        if (dispatchEvent)
             handleEvent(event);
         if (! terminate) {
             screen.showMouse();
@@ -932,7 +932,7 @@ void Slider::createSlider(int size)
     SDL_UnlockSurface(image);
 
     activeSlider = adjustBrightness(image, 1.5, false);
-    // slider = SDL_DisplayFormat(image);
+    slider = SDL_ConvertSurface(image, s->format, 0);
 
     SDL_FreeSurface(image);
 }

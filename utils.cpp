@@ -62,8 +62,8 @@ SDL_Surface* loadImage(const std::wstring &name, bool transparent)
     SDL_FreeSurface(s);
     if (! screenS)
         throw Exception(L"Error translating to screen format " + name);
-    // if (transparent)
-    //     SDL_SetColorKey(screenS, SDL_SRCCOLORKEY, getCornerPixel(screenS));
+    if (transparent)
+        SDL_SetColorKey(screenS, SDL_TRUE, getCornerPixel(screenS));
     return screenS;
 }
 
@@ -217,8 +217,8 @@ SDL_Surface* adjustBrightness(SDL_Surface *image, double k, bool transparent)
 
     SDL_UnlockSurface(s);
 
-    // if (transparent)
-    //     SDL_SetColorKey(s, SDL_SRCCOLORKEY, getCornerPixel(s));
+    if (transparent)
+        SDL_SetColorKey(s, SDL_TRUE, getCornerPixel(s));
 
     return s;
 }
