@@ -23,7 +23,7 @@ INSTALL=install
 
 ifdef WASM
 COMP=emcc
-COMPFLAGS=-v -sUSE_ZLIB=1 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sDISABLE_EXCEPTION_CATCHING=0 -sASYNCIFY -use-port=sdl2_image:formats=bmp --shell-file shell_minimal.html --embed-file res/einstein.res --minify 0 $(CXXFLAGS)
+COMPFLAGS=-v -sUSE_ZLIB=1 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -flto -Os -sDYNAMIC_EXECUTION=0 -sASYNCIFY -use-port=sdl2_image:formats=bmp --shell-file shell_minimal.html --embed-file res/einstein.res --minify 0 $(CXXFLAGS)
 TARGET=einstein.html
 else
 COMP=$(CXX)
