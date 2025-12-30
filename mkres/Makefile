@@ -4,11 +4,11 @@ LIBS=-lz
 
 TARGET=mkres
 SOURCES=main.cpp compressor.cpp lexal.cpp format.cpp messages.cpp msgformatter.cpp \
-	../buffer.cpp ../convert.cpp ../streams.cpp ../table.cpp ../unicode.cpp
+	buffer.cpp convert.cpp streams.cpp table.cpp unicode.cpp
 HEADERS=compressor.h lexal.h format.h messages.h msgformatter.h \
-	../buffer.h ../convert.h ../streams.h ../table.h ../unicode.h
+	buffer.h convert.h streams.h table.h unicode.h
 OBJECTS=main.o compressor.o lexal.o format.o messages.o msgformatter.o \
-	../buffer.o ../convert.o ../streams.o ../table.o ../unicode.o
+	buffer.o convert.o streams.o table.o unicode.o
 
 .cpp.o:
 	$(CXX) -c $(CFLAGS) $< -o $@

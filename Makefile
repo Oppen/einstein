@@ -17,11 +17,19 @@ OPTIMIZE=#-O6 -march=pentium4 -mfpmath=sse -fomit-frame-pointer -funroll-loops
 PROFILER=#-pg
 DEBUG=-ggdb
 CXXFLAGS+=-pipe -Wall $(OPTIMIZE) $(DEBUG) `sdl2-config --cflags` -DPREFIX=L\"$(PREFIX)\" $(PROFILER)
-LNFLAGS=-pipe $(PROFILER)
+LNFLAGS+=-pipe $(PROFILER)
 LIBS=-lSDL2_ttf -lfreetype `sdl2-config --libs` -lz -lSDL2_mixer
 INSTALL=install
 
+ifdef WASM
+COMP=emcc
+COMPFLAGS=-v -sUSE_ZLIB=1 -sUSE_SDL=2 -sUSE_SDL_TTF=2 -sDISABLE_EXCEPTION_CATCHING=0 -sASYNCIFY -use-port=sdl2_image:formats=bmp --shell-file shell_minimal.html --embed-file res/einstein.res --minify 0 $(CXXFLAGS)
+TARGET=einstein.html
+else
+COMP=$(CXX)
+COMPFLAGS=$(CXXFLAGS)
 TARGET=einstein
+endif
 
 SOURCES=puzgen.cpp main.cpp screen.cpp resources.cpp utils.cpp game.cpp \
 	widgets.cpp iconset.cpp puzzle.cpp rules.cpp \
@@ -44,20 +52,26 @@ HEADERS=screen.h main.h exceptions.h resources.h utils.h \
 	i18n.h lexal.h streams.h tokenizer.h sound.h
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) -c $<
+	$(COMP) $(COMPFLAGS) -c $<
 
 all: $(TARGET)
 
 
-$(TARGET): $(OBJECTS)
-	cd mkres && make
+$(TARGET): $(OBJECTS) res/einstein.res
+	$(COMP) $(COMPFLAGS) $(LNFLAGS) $(OBJECTS) -o $(TARGET) $(LIBS) $(LDFLAGS)
+
+res/einstein.res: mkres/mkres
 	cd res && ../mkres/mkres --source resources.descr --output einstein.res
-	$(CXX) $(LNFLAGS) $(OBJECTS) -o $(TARGET) $(LIBS) $(LDFLAGS)
+
+mkres/mkres:
+	$(MAKE) -C mkres mkres
+
+cleanall: clean
+	cd res && rm -f einstein.res
+	cd mkres && make clean
 
 clean:
 	rm -f $(OBJECTS) core* *core $(TARGET) *~
-	cd res && rm -f einstein.res
-	cd mkres && make clean
 
 depend:
 	@makedepend $(SOURCES) 2> /dev/null

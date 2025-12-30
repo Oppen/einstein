@@ -27,7 +27,7 @@ class OptionsChangedCommand: public Command
                 getStorage()->set(L"fullscreen", fullscreen);
                 screen.setFullScreen(fullscreen);
             }
-#ifndef __APPLE__
+#if defined(__APPLE__) || defined(__EMSCRIPTEN__)
             if (niceCursor != oldCursor) {
                 getStorage()->set(L"niceCursor", niceCursor);
                 screen.setCursor(niceCursor);
@@ -67,7 +67,7 @@ void showOptionsWindow(Area *parentArea)
     area.add(new Label(&titleFont, 250, 175, 300, 40, Label::ALIGN_CENTER,
                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"options")));
     OPTION(260, L"fullscreen", fullscreen);
-#ifndef __APPLE__
+#if defined(__APPLE__) || defined(__EMSCRIPTEN__)
     OPTION(280, L"niceCursor", niceCursor);
 #endif
 

@@ -36,7 +36,7 @@ static void initScreen()
 
     //SDL_WM_SetCaption("Einstein", NULL);
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__EMSCRIPTEN__)
     screen.setCursor(false);
 #else
     screen.setCursor(getStorage()->get(L"niceCursor", 1));
